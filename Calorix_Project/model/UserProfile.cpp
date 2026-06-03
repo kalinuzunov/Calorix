@@ -3,11 +3,9 @@
 #include "../Constants.h"
 
 UserProfile::UserProfile()
-    : weight(Constants::ProfileDefaults::WEIGHT),
-    height(Constants::ProfileDefaults::HEIGHT),
-    age(Constants::ProfileDefaults::AGE),
-    gender(Gender::OTHER),
-    activityLevel(ActivityLevel::SEDENTARY) {
+    : weight(Constants::ProfileDefaults::WEIGHT),height(Constants::ProfileDefaults::HEIGHT),
+      age(Constants::ProfileDefaults::AGE),gender(Gender::OTHER),
+      activityLevel(ActivityLevel::SEDENTARY) {
 }
 
 UserProfile::UserProfile(double weight, double height, unsigned age, Gender gender, ActivityLevel activityLevel) {
@@ -18,16 +16,19 @@ UserProfile::UserProfile(double weight, double height, unsigned age, Gender gend
     setActivityLevel(activityLevel);
 }
 
-double UserProfile::getWeight() const { 
-    return weight; }
+double UserProfile::getWeight() const {
+    return weight;
+}
 double UserProfile::getHeight() const {
-    return height; }
+    return height;
+}
 unsigned UserProfile::getAge() const {
-    return age; }
-Gender UserProfile::getGender() const { 
-    return gender; }
-ActivityLevel UserProfile::getActivityLevel() const {
-    return activityLevel; }
+    return age;
+}
+Gender UserProfile::getGender() const {
+    return gender;
+}
+ActivityLevel UserProfile::getActivityLevel() const { return activityLevel; }
 
 void UserProfile::setWeight(double newWeight) {
     if (newWeight <= Constants::ProfileLimits::MIN_WEIGHT) {
@@ -43,7 +44,7 @@ void UserProfile::setHeight(double newHeight) {
     height = newHeight;
 }
 
-void UserProfile::setAge(unsigned int newAge) {
+void UserProfile::setAge(unsigned newAge) {
     if (newAge < Constants::ProfileLimits::MIN_AGE || newAge > Constants::ProfileLimits::MAX_AGE) {
         throw std::invalid_argument("Age is outside valid boundaries.");
     }

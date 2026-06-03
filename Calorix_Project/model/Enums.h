@@ -3,8 +3,7 @@
 enum class Gender {
     MALE,
     FEMALE,
-    OTHER,
-    UNKNOWN
+    OTHER
 };
 
 enum class ActivityLevel {

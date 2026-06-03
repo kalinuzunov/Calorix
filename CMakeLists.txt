@@ -12,8 +12,6 @@ file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
 add_executable(Calorix ${SOURCES}
         Calorix_Project/model/Food.cpp
         Calorix_Project/model/Food.h
-        Calorix_Project/model/UserBuilder.cpp
-        Calorix_Project/model/UserBuilder.h
         Calorix_Project/model/FoodBuilder.cpp
         Calorix_Project/model/FoodBuilder.h
         Calorix_Project/model/Exercise.cpp
@@ -21,4 +19,6 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/model/FoodEntry.cpp
         Calorix_Project/model/FoodEntry.h
         Calorix_Project/model/ExerciseEntry.cpp
-        Calorix_Project/model/ExerciseEntry.h)
+        Calorix_Project/model/ExerciseEntry.h
+        Calorix_Project/model/UserProfile.cpp
+        Calorix_Project/model/UserProfile.h)

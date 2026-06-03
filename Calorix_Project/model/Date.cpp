@@ -1,6 +1,8 @@
 #include "Date.h"
 #include "../Constants.h"
-#include <iostream>
+#include "CalorixExceptions.h"
+#include <string>
+
 using namespace Constants;
 
 static const unsigned DAYS_IN_MONTHS[DateLimits::MAX_MONTHS + 1] = {
@@ -23,11 +25,12 @@ bool Date::isValid(unsigned y, unsigned m, unsigned d) const {
     return d <= getDaysInMonth(m, y);
 }
 
-Date::Date() : year(2000), month(1), day(1) {}
+Date::Date()
+    : year(DateLimits::DEFAULT_YEAR), month(DateLimits::DEFAULT_MONTH), day(DateLimits::DEFAULT_DAY) {}
 
 Date::Date(unsigned y, unsigned m, unsigned d) {
     if (!isValid(y, m, d)) {
-        throw std::invalid_argument("Invalid date provided!");
+        throw InvalidDateException("Invalid date provided!");
     }
     year = y;
     month = m;
@@ -37,25 +40,36 @@ Date::Date(unsigned y, unsigned m, unsigned d) {
 Date::Date(const std::string& dateString) {
     if (dateString.length() != DateLimits::EXPECTED_STRING_LENGTH ||
         dateString[4] != '-' || dateString[7] != '-') {
-        throw std::invalid_argument("Invalid date format! Expected: YYYY-MM-DD");
+        throw InvalidDateException("Invalid date format! Expected: YYYY-MM-DD");
     }
 
-    unsigned y = std::stoi(dateString.substr(DateLimits::YEAR_START_INDEX, DateLimits::YEAR_LENGTH));
-    unsigned m = std::stoi(dateString.substr(DateLimits::MONTH_START_INDEX, DateLimits::MONTH_LENGTH));
-    unsigned d = std::stoi(dateString.substr(DateLimits::DAY_START_INDEX, DateLimits::DAY_LENGTH));
+    try {
+        unsigned y = std::stoi(dateString.substr(DateLimits::YEAR_START_INDEX, DateLimits::YEAR_LENGTH));
+        unsigned m = std::stoi(dateString.substr(DateLimits::MONTH_START_INDEX, DateLimits::MONTH_LENGTH));
+        unsigned d = std::stoi(dateString.substr(DateLimits::DAY_START_INDEX, DateLimits::DAY_LENGTH));
 
-    if (!isValid(y, m, d)) {
-        throw std::invalid_argument("Invalid date values provided!");
+        if (!isValid(y, m, d)) {
+            throw InvalidDateException("Invalid date values provided!");
+        }
+
+        year = y;
+        month = m;
+        day = d;
     }
-
-    year = y;
-    month = m;
-    day = d;
+    catch (const std::exception& e) {
+        throw InvalidDateException("Date string contains invalid characters or numbers out of range.");
+    }
 }
 
-unsigned Date::getYear() const { return year; }
-unsigned Date::getMonth() const { return month; }
-unsigned Date::getDay() const { return day; }
+unsigned Date::getYear() const {
+    return year;
+}
+unsigned Date::getMonth() const {
+    return month;
+}
+unsigned Date::getDay() const {
+    return day;
+}
 
 std::string Date::toString() const {
     std::string result = std::to_string(year) + "-";

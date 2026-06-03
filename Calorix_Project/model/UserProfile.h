@@ -21,7 +21,7 @@ public:
 
     void setWeight(double newWeight);
     void setHeight(double newHeight);
-    void setAge(unsigned int newAge);
+    void setAge(unsigned newAge);
     void setGender(Gender newGender);
     void setActivityLevel(ActivityLevel newActivityLevel);
 };

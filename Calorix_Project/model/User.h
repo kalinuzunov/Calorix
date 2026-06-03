@@ -13,6 +13,9 @@ private:
 
 public:
     User(const std::string& username, const Password& password, const UserProfile& profile);
+
+    User(unsigned id, const std::string& username, const Password& password, const UserProfile& profile);
+
     virtual ~User() = default;
 
     unsigned getUserId() const;
@@ -22,4 +25,6 @@ public:
 
     void setPassword(const Password& newPassword);
     void setProfile(const UserProfile& newProfile);
+
+    static void updateNextId(unsigned loadedId);
 };

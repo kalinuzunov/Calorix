@@ -55,4 +55,7 @@ namespace Constants {
         constexpr double DEFAULT_DURATION_VALUE = 0.0;
         constexpr double MINUTES_IN_HOUR = 60.0;
     }
+    namespace GoalLimits {
+        constexpr double DEFAULT_TARGET_VALUE = 0.0;
+    }
 }
