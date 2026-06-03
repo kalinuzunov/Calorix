@@ -15,6 +15,6 @@ public:
     Password();
     Password(const std::string& passwordString);
 
-    std::string getValue() const;
+    const std::string& getValue() const;
     void setValue(const std::string& newPasswordString);
 };

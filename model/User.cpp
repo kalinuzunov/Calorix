@@ -4,7 +4,7 @@
 
 using namespace Constants;
 
-unsigned User::nextId = 1;
+unsigned User::nextId = Global::STARTING_ID;
 
 User::User(const std::string& username, const Password& password, const UserProfile& profile)
     : profile(profile), username(username), password(password), userId(nextId++) {
@@ -17,15 +17,15 @@ unsigned User::getUserId() const {
     return userId;
 }
 
-std::string User::getUsername() const {
+const std::string& User::getUsername() const {
     return username;
 }
 
-std::string User::getPassword() const {
+const std::string& User::getPassword() const {
     return password.getValue();
 }
 
-UserProfile User::getProfile() const {
+const UserProfile& User::getProfile() const {
     return profile;
 }
 

@@ -50,7 +50,7 @@ Password::Password(const std::string& passwordString) {
     value = passwordString;
 }
 
-std::string Password::getValue() const {
+const std::string& Password::getValue() const {
     return value;
 }
 

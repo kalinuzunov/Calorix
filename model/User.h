@@ -16,9 +16,9 @@ public:
     virtual ~User() = default;
 
     unsigned getUserId() const;
-    std::string getUsername() const;
-    std::string getPassword() const;
-    UserProfile getProfile() const;
+    const std::string& getUsername() const;
+    const std::string& getPassword() const;
+    const UserProfile& getProfile() const;
 
     void setPassword(const Password& newPassword);
     void setProfile(const UserProfile& newProfile);

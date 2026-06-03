@@ -3,6 +3,8 @@
 namespace Constants {
     namespace Global {
         inline const std::string EMPTY_STRING = "";
+        constexpr unsigned STARTING_ID = 1;
+        constexpr unsigned INVALID_ID = 0;
     }
 
     namespace ProfileLimits {
@@ -38,11 +40,19 @@ namespace Constants {
         constexpr unsigned DEFAULT_YEAR = 2000;
         constexpr unsigned DEFAULT_MONTH = 1;
         constexpr unsigned DEFAULT_DAY = 1;
+
+        constexpr unsigned MONTHS_IN_YEAR = 12;
+        constexpr unsigned MAX_DAYS_IN_MONTH = 31;
     }
 
     namespace FoodLimits {
         constexpr double DEFAULT_MACRO_VALUE = 0.0;
-
+        constexpr double BASE_GRAMS_UNIT = 100.0;
     }
 
+    namespace ExerciseLimits {
+        constexpr double DEFAULT_CALORIES_VALUE = 0.0;
+        constexpr double DEFAULT_DURATION_VALUE = 0.0;
+        constexpr double MINUTES_IN_HOUR = 60.0;
+    }
 }

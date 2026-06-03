@@ -15,4 +15,6 @@ add_executable(Calorix ${SOURCES}
         model/UserBuilder.cpp
         model/UserBuilder.h
         model/FoodBuilder.cpp
-        model/FoodBuilder.h)
+        model/FoodBuilder.h
+        model/Exercise.cpp
+        model/Exercise.h)
