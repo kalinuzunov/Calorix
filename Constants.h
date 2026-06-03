@@ -20,6 +20,7 @@ namespace Constants {
 
     namespace UserLimits {
         constexpr size_t MIN_PASSWORD_LENGTH = 8;
+        constexpr unsigned DEFAULT_AGE = 0;
     }
 
     namespace DateLimits {
@@ -41,6 +42,7 @@ namespace Constants {
 
     namespace FoodLimits {
         constexpr double DEFAULT_MACRO_VALUE = 0.0;
+
     }
 
 }
