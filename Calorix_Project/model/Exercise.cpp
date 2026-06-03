@@ -1,5 +1,5 @@
 #include "Exercise.h"
-#include "Constants.h"
+#include "../Constants.h"
 #include "CalorixExceptions.h"
 
 using namespace Constants;

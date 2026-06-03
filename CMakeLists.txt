@@ -4,17 +4,21 @@ project(Calorix)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(model)
+include_directories(Calorix_Project/model)
 include_directories(.)
 
 file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
 
 add_executable(Calorix ${SOURCES}
-        model/Food.cpp
-        model/Food.h
-        model/UserBuilder.cpp
-        model/UserBuilder.h
-        model/FoodBuilder.cpp
-        model/FoodBuilder.h
-        model/Exercise.cpp
-        model/Exercise.h)
+        Calorix_Project/model/Food.cpp
+        Calorix_Project/model/Food.h
+        Calorix_Project/model/UserBuilder.cpp
+        Calorix_Project/model/UserBuilder.h
+        Calorix_Project/model/FoodBuilder.cpp
+        Calorix_Project/model/FoodBuilder.h
+        Calorix_Project/model/Exercise.cpp
+        Calorix_Project/model/Exercise.h
+        Calorix_Project/model/FoodEntry.cpp
+        Calorix_Project/model/FoodEntry.h
+        Calorix_Project/model/ExerciseEntry.cpp
+        Calorix_Project/model/ExerciseEntry.h)
