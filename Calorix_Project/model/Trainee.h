@@ -3,7 +3,9 @@
 #include "FoodEntry.h"
 #include "ExerciseEntry.h"
 #include "FitnessGoal.h"
+#include "ICalorieCalculator.h"
 #include <vector>
+#include <memory>
 
 class Trainee : public User {
 private:
@@ -12,9 +14,13 @@ private:
     std::vector<unsigned> favoriteExercises;
     FitnessGoal goal;
 
+    std::unique_ptr<ICalorieCalculator> calculator;
+
 public:
     Trainee(const std::string& username, const Password& password, const UserProfile& profile);
     Trainee(unsigned id, const std::string& username, const Password& password, const UserProfile& profile);
+
+    void setCalorieCalculator(std::unique_ptr<ICalorieCalculator> newCalculator);
 
     void logFood(const FoodEntry& entry);
     void logExercise(const ExerciseEntry& entry);

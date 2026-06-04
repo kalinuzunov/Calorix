@@ -12,6 +12,10 @@ Trainee::Trainee(unsigned id, const std::string& username, const Password& passw
     : User(id, username, password, profile) {
 }
 
+void Trainee::setCalorieCalculator(std::unique_ptr<ICalorieCalculator> newCalculator) {
+    calculator = std::move(newCalculator);
+}
+
 void Trainee::logFood(const FoodEntry& entry) {
     foodDiary.push_back(entry);
 }
@@ -66,16 +70,11 @@ double Trainee::calculateBMI() const {
 }
 
 double Trainee::calculateBMR() const {
-    double weight = getProfile().getWeight();
-    double height = getProfile().getHeight();
-    unsigned age = getProfile().getAge();
-    Gender gender = getProfile().getGender();
+    if (!calculator) {
+        return Global::ZERO;
+    }
 
-    double base = (HealthFormulas::BMR_WEIGHT_MULTIPLIER * weight) +
-                  (HealthFormulas::BMR_HEIGHT_MULTIPLIER * height) -
-                  (HealthFormulas::BMR_AGE_MULTIPLIER * age);
-
-    return base + HealthFormulas::BMR_MODIFIERS[static_cast<int>(gender)];
+    return calculator->calculateBMR(getProfile());
 }
 
 double Trainee::calculateDailyCalorieTarget() const {

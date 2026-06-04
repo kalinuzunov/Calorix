@@ -61,29 +61,34 @@ namespace Constants {
         constexpr double DEFAULT_TARGET_VALUE = 0.0;
     }
     namespace HealthFormulas {
-        constexpr double CENTIMETERS_IN_METER = 100.0;
 
-        constexpr double BMR_WEIGHT_MULTIPLIER = 10.0;
-        constexpr double BMR_HEIGHT_MULTIPLIER = 6.25;
-        constexpr double BMR_AGE_MULTIPLIER = 5.0;
+        constexpr double CENTIMETERS_IN_METER = 100.0;
 
         constexpr double ACTIVITY_MULTIPLIER_SEDENTARY   = 1.2;
         constexpr double ACTIVITY_MULTIPLIER_LIGHT       = 1.375;
         constexpr double ACTIVITY_MULTIPLIER_MODERATE    = 1.55;
         constexpr double ACTIVITY_MULTIPLIER_ACTIVE      = 1.725;
         constexpr double ACTIVITY_MULTIPLIER_VERY_ACTIVE = 1.9;
-        constexpr double ACTIVITY_MULTIPLIERS[] = {ACTIVITY_MULTIPLIER_SEDENTARY, ACTIVITY_MULTIPLIER_LIGHT, ACTIVITY_MULTIPLIER_MODERATE, ACTIVITY_MULTIPLIER_VERY_ACTIVE, ACTIVITY_MULTIPLIER_VERY_ACTIVE};
+
+        constexpr double ACTIVITY_MULTIPLIERS[] = {
+            ACTIVITY_MULTIPLIER_SEDENTARY,
+            ACTIVITY_MULTIPLIER_LIGHT,
+            ACTIVITY_MULTIPLIER_MODERATE,
+            ACTIVITY_MULTIPLIER_ACTIVE,
+            ACTIVITY_MULTIPLIER_VERY_ACTIVE
+        };
 
         constexpr double GOAL_MODIFIER_WEIGHT_LOSS = -500.0;
         constexpr double GOAL_MODIFIER_MAINTENANCE = 0.0;
         constexpr double GOAL_MODIFIER_BULKING     = 300.0;
         constexpr double GOAL_MODIFIER_NONE        = 0.0;
-        constexpr double GOAL_CALORIE_MODIFIERS[] = {GOAL_MODIFIER_WEIGHT_LOSS, GOAL_MODIFIER_MAINTENANCE, GOAL_MODIFIER_BULKING, GOAL_MODIFIER_NONE};
 
-        constexpr double BMR_MALE_MODIFIER = 5.0;
-        constexpr double BMR_FEMALE_MODIFIER = -161.0;
-        constexpr double BMR_OTHER_MODIFIER = (BMR_MALE_MODIFIER+BMR_FEMALE_MODIFIER)/2;
-        constexpr double BMR_MODIFIERS[] = {BMR_MALE_MODIFIER, BMR_FEMALE_MODIFIER,BMR_OTHER_MODIFIER};
+        constexpr double GOAL_CALORIE_MODIFIERS[] = {
+            GOAL_MODIFIER_WEIGHT_LOSS,
+            GOAL_MODIFIER_MAINTENANCE,
+            GOAL_MODIFIER_BULKING,
+            GOAL_MODIFIER_NONE
+        };
 
         constexpr double MIN_SAFE_CALORIES_MALE = 1500.0;
         constexpr double MIN_SAFE_CALORIES_FEMALE = 1200.0;
@@ -94,6 +99,63 @@ namespace Constants {
             MIN_SAFE_CALORIES_FEMALE,
             MIN_SAFE_CALORIES_OTHER
         };
+
+        namespace MifflinStJeor {
+            constexpr double WEIGHT_MULTIPLIER = 10.0;
+            constexpr double HEIGHT_MULTIPLIER = 6.25;
+            constexpr double AGE_MULTIPLIER = 5.0;
+
+            constexpr double MALE_MODIFIER = 5.0;
+            constexpr double FEMALE_MODIFIER = -161.0;
+            constexpr double OTHER_MODIFIER = (MALE_MODIFIER + FEMALE_MODIFIER) / 2.0;
+
+            constexpr double MODIFIERS[] = {
+                MALE_MODIFIER,
+                FEMALE_MODIFIER,
+                OTHER_MODIFIER
+            };
+        }
+
+        namespace HarrisBenedict {
+            constexpr double MALE_BASE = 66.5;
+            constexpr double FEMALE_BASE = 655.1;
+            constexpr double OTHER_BASE = (MALE_BASE + FEMALE_BASE) / 2.0;
+            constexpr double BASE[] = {MALE_BASE, FEMALE_BASE, OTHER_BASE};
+
+            constexpr double MALE_WEIGHT_MULT = 13.75;
+            constexpr double FEMALE_WEIGHT_MULT = 9.563;
+            constexpr double OTHER_WEIGHT_MULT = (MALE_WEIGHT_MULT + FEMALE_WEIGHT_MULT) / 2.0;
+            constexpr double WEIGHT_MULT[] = {MALE_WEIGHT_MULT, FEMALE_WEIGHT_MULT, OTHER_WEIGHT_MULT};
+
+            constexpr double MALE_HEIGHT_MULT = 5.003;
+            constexpr double FEMALE_HEIGHT_MULT = 1.850;
+            constexpr double OTHER_HEIGHT_MULT = (MALE_HEIGHT_MULT + FEMALE_HEIGHT_MULT) / 2.0;
+            constexpr double HEIGHT_MULT[] = {MALE_HEIGHT_MULT, FEMALE_HEIGHT_MULT, OTHER_HEIGHT_MULT};
+
+            constexpr double MALE_AGE_MULT = 6.75;
+            constexpr double FEMALE_AGE_MULT = 4.676;
+            constexpr double OTHER_AGE_MULT = (MALE_AGE_MULT + FEMALE_AGE_MULT) / 2.0;
+            constexpr double AGE_MULT[] = {MALE_AGE_MULT, FEMALE_AGE_MULT, OTHER_AGE_MULT};
+        }
+
+        namespace WHO {
+            constexpr unsigned AGE_YOUNG = 30;
+            constexpr unsigned AGE_MIDDLE = 60;
+
+            constexpr double MALE_18_30_MULT = 15.3;
+            constexpr double MALE_18_30_BASE = 679.0;
+            constexpr double MALE_31_60_MULT = 11.6;
+            constexpr double MALE_31_60_BASE = 879.0;
+            constexpr double MALE_60_PLUS_MULT = 13.5;
+            constexpr double MALE_60_PLUS_BASE = 487.0;
+
+            constexpr double FEMALE_18_30_MULT = 14.7;
+            constexpr double FEMALE_18_30_BASE = 496.0;
+            constexpr double FEMALE_31_60_MULT = 8.7;
+            constexpr double FEMALE_31_60_BASE = 829.0;
+            constexpr double FEMALE_60_PLUS_MULT = 10.5;
+            constexpr double FEMALE_60_PLUS_BASE = 596.0;
+        }
     }
 
 }
