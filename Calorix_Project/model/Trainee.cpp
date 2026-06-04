@@ -1,0 +1,82 @@
+#include "Trainee.h"
+#include <algorithm>
+#include "../Constants.h"
+
+using namespace Constants;
+
+Trainee::Trainee(const std::string& username, const Password& password, const UserProfile& profile)
+    : User(username, password, profile) {
+
+}
+
+Trainee::Trainee(unsigned id, const std::string& username, const Password& password, const UserProfile& profile)
+    : User(id, username, password, profile) {
+}
+
+
+void Trainee::logFood(const FoodEntry& entry) {
+    foodDiary.push_back(entry);
+}
+
+void Trainee::logExercise(const ExerciseEntry& entry) {
+    exerciseDiary.push_back(entry);
+}
+
+
+void Trainee::addFavoriteExercise(unsigned exerciseId) {
+    if (std::find(favoriteExercises.begin(), favoriteExercises.end(), exerciseId) == favoriteExercises.end()) {
+        favoriteExercises.push_back(exerciseId);
+    }
+}
+
+void Trainee::removeFavoriteExercise(unsigned exerciseId) {
+    favoriteExercises.erase(
+        std::remove(favoriteExercises.begin(), favoriteExercises.end(), exerciseId),
+        favoriteExercises.end()
+    );
+}
+
+void Trainee::setFitnessGoal(const FitnessGoal& newGoal) {
+    goal = newGoal;
+}
+
+const FitnessGoal& Trainee::getFitnessGoal() const {
+    return goal;
+}
+
+const std::vector<FoodEntry>& Trainee::getFoodDiary() const {
+    return foodDiary;
+}
+
+const std::vector<ExerciseEntry>& Trainee::getExerciseDiary() const {
+    return exerciseDiary;
+}
+
+const std::vector<unsigned>& Trainee::getFavoriteExercises() const {
+    return favoriteExercises;
+}
+
+double Trainee::calculateBMI() const {
+    double weightKg = getProfile().getWeight();
+
+    double heightMeters = getProfile().getHeight() / HealthFormulas::CENTIMETERS_IN_METER;
+
+    if (heightMeters <= Global::ZERO) {
+        return Global::ZERO;
+    }
+
+    return weightKg / (heightMeters * heightMeters);
+}
+
+double Trainee::calculateBMR() const {
+    double weight = getProfile().getWeight();
+    double height = getProfile().getHeight();
+    unsigned age = getProfile().getAge();
+    Gender gender = getProfile().getGender();
+
+    double base = (HealthFormulas::BMR_WEIGHT_MULTIPLIER * weight) +
+                  (HealthFormulas::BMR_HEIGHT_MULTIPLIER * height) -
+                  (HealthFormulas::BMR_AGE_MULTIPLIER * age);
+
+    return base + HealthFormulas::BMR_MODIFIERS[static_cast<int>(gender)];
+}

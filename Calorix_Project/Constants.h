@@ -1,10 +1,12 @@
 #pragma once
+#include <string>
 
 namespace Constants {
     namespace Global {
         inline const std::string EMPTY_STRING = "";
         constexpr unsigned STARTING_ID = 1;
         constexpr unsigned INVALID_ID = 0;
+        constexpr double ZERO = 0.0;
     }
 
     namespace ProfileLimits {
@@ -57,5 +59,17 @@ namespace Constants {
     }
     namespace GoalLimits {
         constexpr double DEFAULT_TARGET_VALUE = 0.0;
+    }
+    namespace HealthFormulas {
+        constexpr double CENTIMETERS_IN_METER = 100.0;
+
+        constexpr double BMR_WEIGHT_MULTIPLIER = 10.0;
+        constexpr double BMR_HEIGHT_MULTIPLIER = 6.25;
+        constexpr double BMR_AGE_MULTIPLIER = 5.0;
+
+        constexpr double BMR_MALE_MODIFIER = 5.0;
+        constexpr double BMR_FEMALE_MODIFIER = -161.0;
+        constexpr double BMR_OTHER_MODIFIER = -78.0;
+        constexpr double BMR_MODIFIERS[] = {BMR_MALE_MODIFIER, BMR_FEMALE_MODIFIER,BMR_OTHER_MODIFIER};
     }
 }

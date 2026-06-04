@@ -21,4 +21,6 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/model/ExerciseEntry.cpp
         Calorix_Project/model/ExerciseEntry.h
         Calorix_Project/model/UserProfile.cpp
-        Calorix_Project/model/UserProfile.h)
+        Calorix_Project/model/UserProfile.h
+        Calorix_Project/model/Trainee.cpp
+        Calorix_Project/model/Trainee.h)

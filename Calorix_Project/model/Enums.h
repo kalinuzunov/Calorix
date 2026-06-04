@@ -29,5 +29,5 @@ enum class GoalType {
     WEIGHT_LOSS,
     BULKING,
     MAINTENANCE,
-    NONE
+    NONE,
 };
