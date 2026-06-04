@@ -1,18 +1,16 @@
 #include "Trainee.h"
-#include <algorithm>
 #include "../Constants.h"
+#include <algorithm>
 
 using namespace Constants;
 
 Trainee::Trainee(const std::string& username, const Password& password, const UserProfile& profile)
     : User(username, password, profile) {
-
 }
 
 Trainee::Trainee(unsigned id, const std::string& username, const Password& password, const UserProfile& profile)
     : User(id, username, password, profile) {
 }
-
 
 void Trainee::logFood(const FoodEntry& entry) {
     foodDiary.push_back(entry);
@@ -21,7 +19,6 @@ void Trainee::logFood(const FoodEntry& entry) {
 void Trainee::logExercise(const ExerciseEntry& entry) {
     exerciseDiary.push_back(entry);
 }
-
 
 void Trainee::addFavoriteExercise(unsigned exerciseId) {
     if (std::find(favoriteExercises.begin(), favoriteExercises.end(), exerciseId) == favoriteExercises.end()) {
@@ -79,4 +76,23 @@ double Trainee::calculateBMR() const {
                   (HealthFormulas::BMR_AGE_MULTIPLIER * age);
 
     return base + HealthFormulas::BMR_MODIFIERS[static_cast<int>(gender)];
+}
+
+double Trainee::calculateDailyCalorieTarget() const {
+    double bmr = calculateBMR();
+
+    ActivityLevel activity = getProfile().getActivityLevel();
+    double tdee = bmr * HealthFormulas::ACTIVITY_MULTIPLIERS[static_cast<int>(activity)];
+
+    GoalType goalType = goal.getType();
+    double finalCalories = tdee + HealthFormulas::GOAL_CALORIE_MODIFIERS[static_cast<int>(goalType)];
+
+    Gender gender = getProfile().getGender();
+    double safeMinimum = HealthFormulas::MIN_SAFE_CALORIES[static_cast<int>(gender)];
+
+    if (finalCalories < safeMinimum) {
+        return safeMinimum;
+    }
+
+    return finalCalories;
 }

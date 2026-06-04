@@ -67,9 +67,33 @@ namespace Constants {
         constexpr double BMR_HEIGHT_MULTIPLIER = 6.25;
         constexpr double BMR_AGE_MULTIPLIER = 5.0;
 
+        constexpr double ACTIVITY_MULTIPLIER_SEDENTARY   = 1.2;
+        constexpr double ACTIVITY_MULTIPLIER_LIGHT       = 1.375;
+        constexpr double ACTIVITY_MULTIPLIER_MODERATE    = 1.55;
+        constexpr double ACTIVITY_MULTIPLIER_ACTIVE      = 1.725;
+        constexpr double ACTIVITY_MULTIPLIER_VERY_ACTIVE = 1.9;
+        constexpr double ACTIVITY_MULTIPLIERS[] = {ACTIVITY_MULTIPLIER_SEDENTARY, ACTIVITY_MULTIPLIER_LIGHT, ACTIVITY_MULTIPLIER_MODERATE, ACTIVITY_MULTIPLIER_VERY_ACTIVE, ACTIVITY_MULTIPLIER_VERY_ACTIVE};
+
+        constexpr double GOAL_MODIFIER_WEIGHT_LOSS = -500.0;
+        constexpr double GOAL_MODIFIER_MAINTENANCE = 0.0;
+        constexpr double GOAL_MODIFIER_BULKING     = 300.0;
+        constexpr double GOAL_MODIFIER_NONE        = 0.0;
+        constexpr double GOAL_CALORIE_MODIFIERS[] = {GOAL_MODIFIER_WEIGHT_LOSS, GOAL_MODIFIER_MAINTENANCE, GOAL_MODIFIER_BULKING, GOAL_MODIFIER_NONE};
+
         constexpr double BMR_MALE_MODIFIER = 5.0;
         constexpr double BMR_FEMALE_MODIFIER = -161.0;
-        constexpr double BMR_OTHER_MODIFIER = -78.0;
+        constexpr double BMR_OTHER_MODIFIER = (BMR_MALE_MODIFIER+BMR_FEMALE_MODIFIER)/2;
         constexpr double BMR_MODIFIERS[] = {BMR_MALE_MODIFIER, BMR_FEMALE_MODIFIER,BMR_OTHER_MODIFIER};
+
+        constexpr double MIN_SAFE_CALORIES_MALE = 1500.0;
+        constexpr double MIN_SAFE_CALORIES_FEMALE = 1200.0;
+        constexpr double MIN_SAFE_CALORIES_OTHER = (MIN_SAFE_CALORIES_MALE + MIN_SAFE_CALORIES_FEMALE) / 2.0;
+
+        constexpr double MIN_SAFE_CALORIES[] = {
+            MIN_SAFE_CALORIES_MALE,
+            MIN_SAFE_CALORIES_FEMALE,
+            MIN_SAFE_CALORIES_OTHER
+        };
     }
+
 }

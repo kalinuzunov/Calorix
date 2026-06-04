@@ -14,7 +14,6 @@ private:
 
 public:
     Trainee(const std::string& username, const Password& password, const UserProfile& profile);
-
     Trainee(unsigned id, const std::string& username, const Password& password, const UserProfile& profile);
 
     void logFood(const FoodEntry& entry);
@@ -32,4 +31,5 @@ public:
 
     double calculateBMI() const;
     double calculateBMR() const;
+    double calculateDailyCalorieTarget() const;
 };
