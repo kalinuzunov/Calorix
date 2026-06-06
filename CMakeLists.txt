@@ -34,4 +34,6 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/model/IConsumable.h
         Calorix_Project/model/Recipe.cpp
         Calorix_Project/model/Recipe.h
+        Calorix_Project/managers/FileManager.cpp
+        Calorix_Project/managers/FileManager.h
 )
