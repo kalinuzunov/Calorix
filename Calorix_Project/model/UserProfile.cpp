@@ -1,6 +1,7 @@
 #include "UserProfile.h"
 #include <stdexcept>
 #include "../Constants.h"
+#include "CalorixExceptions.h"
 
 UserProfile::UserProfile()
     : weight(Constants::ProfileDefaults::WEIGHT),height(Constants::ProfileDefaults::HEIGHT),
@@ -39,14 +40,14 @@ void UserProfile::setWeight(double newWeight) {
 
 void UserProfile::setHeight(double newHeight) {
     if (newHeight <= Constants::ProfileLimits::MIN_HEIGHT) {
-        throw std::invalid_argument("Height must be positive.");
+        throw InvalidWeightException("Weight must be positive.");
     }
     height = newHeight;
 }
 
 void UserProfile::setAge(unsigned newAge) {
     if (newAge < Constants::ProfileLimits::MIN_AGE || newAge > Constants::ProfileLimits::MAX_AGE) {
-        throw std::invalid_argument("Age is outside valid boundaries.");
+        throw InvalidDateException("Age is outside valid boundaries.");
     }
     age = newAge;
 }
