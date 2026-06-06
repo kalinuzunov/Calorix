@@ -30,4 +30,8 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/model/HarrisBenedictStrategy.cpp
         Calorix_Project/model/HarrisBenedictStrategy.h
         Calorix_Project/model/WHOStrategy.cpp
-        Calorix_Project/model/WHOStrategy.h)
+        Calorix_Project/model/WHOStrategy.h
+        Calorix_Project/model/IConsumable.h
+        Calorix_Project/model/Recipe.cpp
+        Calorix_Project/model/Recipe.h
+)

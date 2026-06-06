@@ -1,24 +1,29 @@
 #pragma once
 #include "IConsumable.h"
+#include <vector>
+#include <memory>
+#include <functional>
 
-class Food : public IConsumable {
+class Recipe : public IConsumable {
 private:
     static unsigned nextId;
     unsigned id;
     std::string name;
-    double caloriesPer100g;
-    double proteinPer100g;
-    double carbsPer100g;
-    double fatPer100g;
-    double fiberPer100g;
+
+    std::vector<std::pair<std::shared_ptr<IConsumable>, double>> ingredients;
+
+    double calculateMacro(const std::function<double(const IConsumable*)>& extractor) const;
 
 public:
-    Food(const std::string& name, double calories, double protein, double carbs, double fat, double fiber);
+    Recipe(const std::string& name);
+    Recipe(unsigned id, const std::string& name);
 
-    Food(unsigned id, const std::string& name, double calories, double protein, double carbs, double fat, double fiber);
+    void addIngredient(std::shared_ptr<IConsumable> ingredient, double weightGrams);
+    double getTotalWeight() const;
 
     unsigned getId() const override;
     std::string getName() const override;
+
     double getCaloriesPer100g() const override;
     double getProteinPer100g() const override;
     double getCarbsPer100g() const override;
