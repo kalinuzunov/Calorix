@@ -5,11 +5,19 @@ using namespace Constants;
 
 FoodBuilder::FoodBuilder(const std::string& name)
     : name(name),
+      id(0),
+      isExistingFood(false),
       caloriesPer100g(FoodLimits::DEFAULT_MACRO_VALUE),
       proteinPer100g(FoodLimits::DEFAULT_MACRO_VALUE),
       carbsPer100g(FoodLimits::DEFAULT_MACRO_VALUE),
       fatPer100g(FoodLimits::DEFAULT_MACRO_VALUE),
       fiberPer100g(FoodLimits::DEFAULT_MACRO_VALUE) {}
+
+FoodBuilder& FoodBuilder::setId(unsigned id) {
+    this->id = id;
+    this->isExistingFood = true;
+    return *this;
+}
 
 FoodBuilder& FoodBuilder::setCalories(double calories) {
     this->caloriesPer100g = calories;
@@ -37,5 +45,9 @@ FoodBuilder& FoodBuilder::setFiber(double fiber) {
 }
 
 Food FoodBuilder::build() const {
-    return Food(name, caloriesPer100g, proteinPer100g, carbsPer100g, fatPer100g, fiberPer100g);
+    if (isExistingFood) {
+        return Food(id, name, caloriesPer100g, proteinPer100g, carbsPer100g, fatPer100g, fiberPer100g);
+    } else {
+        return Food(name, caloriesPer100g, proteinPer100g, carbsPer100g, fatPer100g, fiberPer100g);
+    }
 }

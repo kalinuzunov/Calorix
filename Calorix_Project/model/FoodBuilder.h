@@ -5,6 +5,8 @@
 class FoodBuilder {
 private:
     std::string name;
+    unsigned id;
+    bool isExistingFood;
     double caloriesPer100g;
     double proteinPer100g;
     double carbsPer100g;
@@ -14,6 +16,7 @@ private:
 public:
     FoodBuilder(const std::string& name);
 
+    FoodBuilder& setId(unsigned id);
     FoodBuilder& setCalories(double calories);
     FoodBuilder& setProtein(double protein);
     FoodBuilder& setCarbs(double carbs);

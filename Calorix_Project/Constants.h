@@ -157,5 +157,9 @@ namespace Constants {
             constexpr double FEMALE_60_PLUS_BASE = 596.0;
         }
     }
+    namespace Database {
+        constexpr char DELIMITER = '|';
+        constexpr size_t FOOD_RECORD_FIELDS = 7;
+    }
 
 }
