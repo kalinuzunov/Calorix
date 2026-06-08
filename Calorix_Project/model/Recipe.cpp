@@ -73,3 +73,7 @@ void Recipe::updateNextId(unsigned loadedId) {
         nextId = loadedId + 1;
     }
 }
+
+const std::vector<std::pair<std::shared_ptr<IConsumable>, double>>& Recipe::getIngredients() const {
+    return ingredients;
+}

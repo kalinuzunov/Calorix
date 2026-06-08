@@ -160,6 +160,13 @@ namespace Constants {
     namespace Database {
         constexpr char DELIMITER = '|';
         constexpr size_t FOOD_RECORD_FIELDS = 7;
+
+        inline constexpr char RECIPE_INGR_DELIMITER = ',';
+        inline constexpr char RECIPE_WEIGHT_DELIMITER = ':';
+
+        inline constexpr size_t RECIPE_MIN_FIELDS = 2;
+        inline constexpr size_t RECIPE_WITH_INGR_FIELDS = 3;
+        inline constexpr size_t INGREDIENT_PAIR_FIELDS = 2;
     }
 
 }

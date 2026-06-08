@@ -31,4 +31,6 @@ public:
     double getFiberPer100g() const override;
 
     static void updateNextId(unsigned loadedId);
+
+    const std::vector<std::pair<std::shared_ptr<IConsumable>, double>>& getIngredients() const;
 };
