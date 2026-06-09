@@ -171,5 +171,7 @@ namespace Constants {
         inline constexpr size_t INGREDIENT_PAIR_FIELDS = 2;
 
         inline constexpr size_t EXERCISE_RECORD_FIELDS = 4;
+
+        inline constexpr size_t USER_RECORD_FIELDS = 8;
     }
 }

@@ -42,4 +42,6 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/managers/RecipeManager.h
         Calorix_Project/managers/ExerciseManager.cpp
         Calorix_Project/managers/ExerciseManager.h
+        Calorix_Project/managers/UserManager.cpp
+        Calorix_Project/managers/UserManager.h
 )
