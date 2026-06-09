@@ -11,4 +11,6 @@ protected:
     void appendLine(const std::string& filename, const std::string& line) const;
 
     bool fileExists(const std::string& filename) const;
+
+    std::vector<std::string> split(const std::string& str, char delimiter) const;
 };

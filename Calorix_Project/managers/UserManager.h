@@ -9,8 +9,6 @@ class UserManager : public FileManager {
 private:
     std::string filename;
 
-    std::vector<std::string> split(const std::string& str, char delimiter) const;
-
     std::string genderToString(Gender gender) const;
     Gender stringToGender(const std::string& str) const;
 

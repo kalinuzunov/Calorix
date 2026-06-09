@@ -8,9 +8,6 @@
 class RecipeManager : public FileManager {
 private:
     std::string filename;
-
-    std::vector<std::string> split(const std::string& str, char delimiter) const;
-
 public:
     RecipeManager(const std::string& dbFilename);
 

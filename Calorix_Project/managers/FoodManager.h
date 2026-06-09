@@ -8,8 +8,6 @@ class FoodManager : public FileManager {
 private:
     std::string filename;
 
-    std::vector<std::string> split(const std::string& str, char delimiter) const;
-
 public:
     FoodManager(const std::string& dbFilename);
 
