@@ -31,4 +31,9 @@ public:
 
     void displayHelp() const;
     void shutdown();
+
+    void blockUser(const std::string& targetUsername);
+    void addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber);
+    void updateFood(const std::string& foodName, double newCalories);
+    void addExercise(const std::string& name, double caloriesBurnedPerHour, MuscleGroup muscleGroup);
 };
