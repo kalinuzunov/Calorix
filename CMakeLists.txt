@@ -53,4 +53,6 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/comands/GeneralCommands.h
         Calorix_Project/comands/AdminCommands.cpp
         Calorix_Project/comands/AdminCommands.h
+        Calorix_Project/comands/TraineeCommands.cpp
+        Calorix_Project/comands/TraineeCommands.h
 )

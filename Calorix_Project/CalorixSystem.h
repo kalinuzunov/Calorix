@@ -10,6 +10,7 @@
 
 #include "model/User.h"
 #include "model/Enums.h"
+#include "model/Date.h"
 
 class CalorixSystem {
 private:
@@ -36,4 +37,15 @@ public:
     void addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber);
     void updateFood(const std::string& foodName, double newCalories);
     void addExercise(const std::string& name, double caloriesBurnedPerHour, MuscleGroup muscleGroup);
+
+    void setGoal(GoalType type, double targetValue, const Date& deadline);
+    void logFood(const std::string& foodName, double quantityGrams);
+    void logExercise(const std::string& exerciseName, int durationMinutes);
+    void viewDailySummary() const;
+    void viewProgress() const;
+    void calculateBMI() const;
+    void calculateBMR() const;
+    void generateWorkoutPlan(int durationMinutes) const;
+    void addToFavorites(const std::string& exerciseName);
+    void viewFavorites() const;
 };
