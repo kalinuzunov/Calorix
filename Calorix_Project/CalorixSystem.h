@@ -21,9 +21,14 @@ private:
     std::shared_ptr<User> currentUser;
 
 public:
+    CalorixSystem(const std::string& usersFile, const std::string& foodsFile,
+                      const std::string& recipesFile, const std::string& exercisesFile);
+
     void loginUser(const std::string& username, const std::string& password);
     void registerUser(const std::string& username, const std::string& password, 
                       unsigned age, double weight, double height, Gender gender);
     void logoutUser();
 
+    void displayHelp() const;
+    void shutdown();
 };

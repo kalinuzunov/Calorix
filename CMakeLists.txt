@@ -48,4 +48,7 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/comands/LoginCommands.cpp
         Calorix_Project/comands/LoginCommands.h
         Calorix_Project/CalorixSystem.h
+        Calorix_Project/CalorixSystem.cpp
+        Calorix_Project/comands/GeneralCommands.cpp
+        Calorix_Project/comands/GeneralCommands.h
 )
