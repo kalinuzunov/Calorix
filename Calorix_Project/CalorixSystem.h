@@ -26,10 +26,11 @@ public:
                       const std::string& recipesFile, const std::string& exercisesFile);
 
     void loginUser(const std::string& username, const std::string& password);
-    void registerUser(const std::string& username, const std::string& password, 
+    void registerUser(const std::string& username, const std::string& password,
                       unsigned age, double weight, double height, Gender gender);
     void logoutUser();
 
+    void initialize();
     void displayHelp() const;
     void shutdown();
 
