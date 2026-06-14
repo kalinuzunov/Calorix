@@ -8,6 +8,7 @@ include_directories(Calorix_Project/model)
 include_directories(.)
 
 file(GLOB_RECURSE SOURCES "*.cpp" "*.h")
+list(FILTER SOURCES EXCLUDE REGEX "cmake-build-debug")
 
 add_executable(Calorix ${SOURCES}
         Calorix_Project/model/Food.cpp

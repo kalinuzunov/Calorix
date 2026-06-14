@@ -9,7 +9,6 @@ Admin::Admin(const std::string& username, const Password& password, const UserPr
 
 Food Admin::addFood(const std::string& name, double caloriesPer100g, double proteinPer100g,
                     double carbsPer100g, double fatPer100g, double fiberPer100g) const {
-
     FoodBuilder builder(name);
     return builder.setCalories(caloriesPer100g)
                   .setProtein(proteinPer100g)

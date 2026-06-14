@@ -3,6 +3,8 @@
 #include "model/Trainee.h"
 #include <iostream>
 #include <stdexcept>
+#include "model/Password.h"
+#include "model/UserProfile.h"
 
 CalorixSystem::CalorixSystem(const std::string& usersFile, const std::string& foodsFile,
                              const std::string& recipesFile, const std::string& exercisesFile)
@@ -13,6 +15,16 @@ CalorixSystem::CalorixSystem(const std::string& usersFile, const std::string& fo
 
 void CalorixSystem::initialize() {
     std::cout << "[SYSTEM] Calorix initialized. Data loaded.\n";
+
+    std::vector<User> loadedUsers = userManager.loadAllUsers();
+
+    if (loadedUsers.empty()) {
+
+        Admin boss("Kalin_Uzunov", Password("kAlIn9.u"), UserProfile{});
+        userManager.saveUser(boss);
+
+        std::cout << "[SYSTEM] Welcome boss!\n";
+    }
 }
 
 void CalorixSystem::shutdown() {
@@ -46,7 +58,30 @@ void CalorixSystem::loginUser(const std::string& username, const std::string& pa
     if (currentUser != nullptr) {
         throw std::runtime_error("A user is already logged in.");
     }
-    std::cout << "[SYSTEM] Logged in successfully: " << username << "\n";
+
+    std::vector<User> loadedUsers = userManager.loadAllUsers();
+    bool isUserFound = false;
+
+    for (const User& user : loadedUsers) {
+        if (user.getUsername() == username) {
+
+            if (username == "Kalin_Uzunov") {
+                currentUser = std::make_shared<Admin>(username, Password(password), UserProfile{});
+            } else {
+
+            }
+
+            isUserFound = true;
+            break;
+        }
+    }
+
+    if (!isUserFound) {
+        throw std::runtime_error("Wrong username or password.");
+    }
+
+    std::cout << "[SYSTEM] Logged in successfully: " << username << "\n\n";
+    displayHelp();
 }
 
 void CalorixSystem::registerUser(const std::string& username, const std::string& password,
