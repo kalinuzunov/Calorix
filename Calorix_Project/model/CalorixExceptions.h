@@ -19,7 +19,8 @@ public:
     explicit InvalidWeightException(const std::string& message)
         : std::invalid_argument("Weight/Quantity Error: " + message) {}
 };
-    class InvalidNameException : public std::invalid_argument {
+
+class InvalidNameException : public std::invalid_argument {
     public:
         explicit InvalidNameException(const std::string& message)
             : std::invalid_argument("Naming Error: " + message) {}
@@ -30,3 +31,9 @@ public:
         explicit InvalidMacroException(const std::string& message)
             : std::invalid_argument("Macronutrient/Calories Error: " + message) {}
     };
+
+class InvalidCommandException : public std::invalid_argument {
+public:
+    explicit InvalidCommandException(const std::string& message)
+        : std::invalid_argument(message) {}
+};
