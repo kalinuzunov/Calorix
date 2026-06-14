@@ -59,4 +59,5 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/comands/CommandParser.h
         Calorix_Project/Engine.cpp
         Calorix_Project/Engine.h
+        Calorix_Project/main.cpp
 )
