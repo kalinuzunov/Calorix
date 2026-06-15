@@ -1,8 +1,7 @@
 #include "UserManager.h"
 #include "../Constants.h"
 #include <iostream>
-#include <stdexcept>
-
+#include <fstream>
 #include "UserProfileBuilder.h"
 
 using namespace Constants;
@@ -10,11 +9,9 @@ using namespace Constants;
 UserManager::UserManager(const std::string& dbFilename) : filename(dbFilename) {}
 
 std::string UserManager::genderToString(Gender gender) const {
-    switch (gender) {
-        case Gender::MALE: return "MALE";
-        case Gender::FEMALE: return "FEMALE";
-        default: return "OTHER";
-    }
+    if (gender == Gender::MALE) return "MALE";
+    if (gender == Gender::FEMALE) return "FEMALE";
+    return "OTHER";
 }
 
 Gender UserManager::stringToGender(const std::string& str) const {
@@ -24,14 +21,11 @@ Gender UserManager::stringToGender(const std::string& str) const {
 }
 
 std::string UserManager::activityToString(ActivityLevel level) const {
-    switch (level) {
-        case ActivityLevel::SEDENTARY: return "SEDENTARY";
-        case ActivityLevel::LIGHT: return "LIGHT";
-        case ActivityLevel::MODERATE: return "MODERATE";
-        case ActivityLevel::ACTIVE: return "ACTIVE";
-        case ActivityLevel::VERY_ACTIVE: return "VERY_ACTIVE";
-        default: return "SEDENTARY";
-    }
+    if (level == ActivityLevel::LIGHT) return "LIGHT";
+    if (level == ActivityLevel::MODERATE) return "MODERATE";
+    if (level == ActivityLevel::ACTIVE) return "ACTIVE";
+    if (level == ActivityLevel::VERY_ACTIVE) return "VERY_ACTIVE";
+    return "SEDENTARY";
 }
 
 ActivityLevel UserManager::stringToActivity(const std::string& str) const {
@@ -44,7 +38,6 @@ ActivityLevel UserManager::stringToActivity(const std::string& str) const {
 
 void UserManager::saveUser(const User& user) const {
     const UserProfile& profile = user.getProfile();
-
     std::string line = std::to_string(user.getUserId()) + Database::DELIMITER +
                        user.getUsername() + Database::DELIMITER +
                        user.getPassword() + Database::DELIMITER +
@@ -53,17 +46,14 @@ void UserManager::saveUser(const User& user) const {
                        std::to_string(profile.getAge()) + Database::DELIMITER +
                        genderToString(profile.getGender()) + Database::DELIMITER +
                        activityToString(profile.getActivityLevel());
-
     appendLine(filename, line);
 }
 
 std::vector<User> UserManager::loadAllUsers() const {
     std::vector<User> loadedUsers;
     std::vector<std::string> lines = readLines(filename);
-
     for (const auto& line : lines) {
         std::vector<std::string> data = split(line, Database::DELIMITER);
-
         if (data.size() == Database::USER_RECORD_FIELDS) {
             try {
                 unsigned id = std::stoul(data[0]);
@@ -75,27 +65,12 @@ std::vector<User> UserManager::loadAllUsers() const {
                 Gender gender = stringToGender(data[6]);
                 ActivityLevel activity = stringToActivity(data[7]);
 
-                UserProfileBuilder builder;
-                UserProfile profile = builder.setWeight(weight)
-                                             .setHeight(height)
-                                             .setAge(age)
-                                             .setGender(gender)
-                                             .setActivityLevel(activity)
-                                             .build();
-
-                Password userPassword(passwordStr);
-                User parsedUser(id, username, userPassword, profile);
-                
+                UserProfile profile = UserProfileBuilder().setWeight(weight).setHeight(height).setAge(age).setGender(gender).setActivityLevel(activity).build();
+                User parsedUser(id, username, Password(passwordStr), profile);
                 loadedUsers.push_back(parsedUser);
                 User::updateNextId(id);
-
-            } catch (const std::exception& e) {
-                std::cerr << "[ERROR] Failed to parse user line: " << line << " -> " << e.what() << "\n";
-            }
-        } else {
-            std::cerr << "[WARNING] Corrupted user record skipped: " << line << "\n";
+            } catch (...) {}
         }
     }
-
     return loadedUsers;
 }

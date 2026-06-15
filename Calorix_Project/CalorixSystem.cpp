@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include "model/Password.h"
 #include "model/UserProfile.h"
+#include "model/UserProfileBuilder.h"
 
 CalorixSystem::CalorixSystem(const std::string& usersFile, const std::string& foodsFile,
                              const std::string& recipesFile, const std::string& exercisesFile)
@@ -14,7 +15,7 @@ CalorixSystem::CalorixSystem(const std::string& usersFile, const std::string& fo
       currentUser(nullptr) {
 }
 
-void CalorixSystem::initialize() {
+void CalorixSystem::initialize()const {
     std::cout << "[SYSTEM] Calorix initialized. Data loaded.\n";
 
     std::vector<User> loadedUsers = userManager.loadAllUsers();
@@ -57,32 +58,25 @@ void CalorixSystem::displayHelp() const {
 
 
 void CalorixSystem::loginUser(const std::string& username, const std::string& password) {
-    if (currentUser != nullptr) {
-        throw std::runtime_error("A user is already logged in.");
-    }
+    if (currentUser != nullptr) throw std::runtime_error("Already logged in.");
 
     std::vector<User> loadedUsers = userManager.loadAllUsers();
-    bool isUserFound = false;
+    bool found = false;
 
-    for (const User& user : loadedUsers) {
-        if (user.getUsername() == username) {
-
+    for (const auto& user : loadedUsers) {
+        if (user.getUsername() == username && user.getPassword() == password) {
             if (username == "Kalin_Uzunov") {
-                currentUser = std::make_shared<Admin>(username, Password(password), UserProfile{});
+                currentUser = std::make_shared<Admin>(username, Password(password), user.getProfile());
             } else {
-
+                currentUser = std::make_shared<Trainee>(user.getUserId(), username, Password(password), user.getProfile());
             }
-
-            isUserFound = true;
+            found = true;
             break;
         }
     }
 
-    if (!isUserFound) {
-        throw std::runtime_error("Wrong username or password.");
-    }
-
-    std::cout << "[SYSTEM] Logged in successfully: " << username << "\n\n";
+    if (!found) throw std::runtime_error("Wrong credentials.");
+    std::cout << "[SYSTEM] Logged in successfully: " << username << "\n";
     displayHelp();
 }
 
@@ -91,7 +85,25 @@ void CalorixSystem::registerUser(const std::string& username, const std::string&
     if (currentUser != nullptr) {
         throw std::runtime_error("Cannot register while logged in.");
     }
-    std::cout << "[SYSTEM] Registered and logged in successfully: " << username << "\n";
+
+    std::vector<User> existingUsers = userManager.loadAllUsers();
+    for (const auto& u : existingUsers) {
+        if (u.getUsername() == username) {
+            throw std::runtime_error("Username already exists!");
+        }
+    }
+    UserProfile profile = UserProfileBuilder()
+                            .setAge(age)
+                            .setWeight(weight)
+                            .setHeight(height)
+                            .setGender(gender)
+                            .build();
+
+    Trainee newUser(username, Password(password), profile);
+
+    userManager.saveUser(newUser);
+
+    std::cout << "[SYSTEM] Registration successful for: " << username << "\n";
 }
 
 void CalorixSystem::logoutUser() {
@@ -110,7 +122,7 @@ void CalorixSystem::blockUser(const std::string& targetUsername) {
     std::cout << "[ADMIN] User " << targetUsername << " has been blocked.\n";
 }
 
-void CalorixSystem::addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber) {
+void CalorixSystem::addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber) const {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
     if (!admin) throw std::runtime_error("Access denied. Admin privileges required.");
 

@@ -5,6 +5,9 @@
 #include "../model/CalorixExceptions.h"
 #include <string>
 #include <stdexcept>
+#include "../Constants.h"
+
+
 
 std::vector<std::string> CommandParser::splitArguments(const std::string& input) const {
     std::vector<std::string> args;
@@ -41,17 +44,41 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
     if (cmdName == "end") return std::make_unique<EndCommand>();
     if (cmdName == "logout") return std::make_unique<LogoutCommand>();
     if (cmdName == "list_foods") return std::make_unique<ListFoodsCommand>();
+    if (cmdName == "block_user") {
+        if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: block_user <username>");
+        }
+        return std::make_unique<BlockUserCommand>(args[1]);
+    }
+    if (cmdName == "register") {
+        if (args.size() != Constants::Database::REGISTER_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: register <username> <password> <age> <weight> <height> <gender(0/1)>");
+        }
+
+        try {
+            std::string username = args[1];
+            std::string password = args[2];
+            unsigned age = std::stoul(args[3]);
+            double weight = std::stod(args[4]);
+            double height = std::stod(args[5]);
+            Gender gender = static_cast<Gender>(std::stoi(args[6]));
+
+            return std::make_unique<RegisterCommand>(username, password, age, weight, height, gender);
+        } catch (...) {
+            throw InvalidCommandException("Invalid input data for registration!");
+        }
+    }
 
 
     if (cmdName == "login") {
-        if (args.size() != 3) {
+        if (args.size() != Constants::Database::LOGIN_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: login <username> <password>");
         }
         return std::make_unique<LoginCommand>(args[1], args[2]);
     }
 
     if (cmdName == "add_food") {
-        if (args.size() != 7) {
+        if (args.size() != Constants::Database::FOOD_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: add_food <name> <cal> <prot> <carbs> <fat> <fiber>");
         }
 
