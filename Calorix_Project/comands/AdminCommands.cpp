@@ -36,3 +36,7 @@ void AddExerciseCommand::execute(CalorixSystem& system) {
 void ListFoodsCommand::execute(CalorixSystem& system) {
     system.displayAllFoods();
 }
+
+void ListExercisesCommand::execute(CalorixSystem& system) {
+    system.displayAllExercises();
+}

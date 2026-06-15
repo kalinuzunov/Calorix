@@ -42,6 +42,7 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
     if (cmdName == "end") return std::make_unique<EndCommand>();
     if (cmdName == "logout") return std::make_unique<LogoutCommand>();
     if (cmdName == "list_foods") return std::make_unique<ListFoodsCommand>();
+    if (cmdName == "list_exercises") return std::make_unique<ListExercisesCommand>();
 
     if (cmdName == "block_user") {
         if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {

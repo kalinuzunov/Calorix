@@ -42,8 +42,9 @@ void CalorixSystem::displayHelp() const {
     } else if (std::dynamic_pointer_cast<Admin>(currentUser)) {
         std::cout << "You are an Admin. Available commands:\n";
         std::cout << "- add_food <name> <cal> <prot> <carbs> <fat> <fiber>\n";
-        std::cout << "- add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>\n";
         std::cout << "- list_foods\n";
+        std::cout << "- add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>\n";
+        std::cout << "- list_exercises\n";
         std::cout << "- block_user <username>\n";
         std::cout << "- logout\n";
     } else {
@@ -167,10 +168,25 @@ void CalorixSystem::addExercise(const std::string& name, double caloriesBurnedPe
     exerciseManager.loadAllExercises();
 
     Exercise newExercise(name, caloriesBurnedPerHour, muscleGroup);
-
     exerciseManager.saveExercise(newExercise);
 
     std::cout << "[ADMIN] Exercise '" << name << "' saved with ID: " << newExercise.getExerciseId() << "\n";
+}
+
+void CalorixSystem::displayAllExercises() const {
+    auto exercises = exerciseManager.loadAllExercises();
+
+    if (exercises.empty()) {
+        std::cout << "Exercise database is empty.\n";
+        return;
+    }
+
+    std::cout << "\n--- Exercise Database ---\n";
+    for (const auto& ex : exercises) {
+        std::cout << "[" << ex.getExerciseId() << "] " << ex.getName()
+                  << " | Calories/Hour: " << ex.getCaloriesBurnedPerHour()
+                  << " | Muscle Group (0-7): " << static_cast<int>(ex.getMuscleGroup()) << "\n";
+    }
 }
 
 

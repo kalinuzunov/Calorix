@@ -39,6 +39,7 @@ public:
     void displayAllFoods() const;
     void updateFood(const std::string& foodName, double newCalories);
     void addExercise(const std::string& name, double caloriesBurnedPerHour, MuscleGroup muscleGroup);
+    void displayAllExercises() const;
 
     void setGoal(GoalType type, double targetValue, const Date& deadline);
     void logFood(const std::string& foodName, double quantityGrams);

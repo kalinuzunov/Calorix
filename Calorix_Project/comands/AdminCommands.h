@@ -52,3 +52,8 @@ class ListFoodsCommand : public ICommand {
 public:
     void execute(CalorixSystem& system) override;
 };
+
+class ListExercisesCommand : public ICommand {
+public:
+    void execute(CalorixSystem& system) override;
+};
