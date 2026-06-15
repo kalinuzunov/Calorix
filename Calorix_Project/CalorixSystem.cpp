@@ -1,6 +1,7 @@
 #include "CalorixSystem.h"
 #include "model/Admin.h"
 #include "model/Trainee.h"
+#include "model/Food.h"
 #include <iostream>
 #include <stdexcept>
 #include "model/Password.h"
@@ -40,6 +41,7 @@ void CalorixSystem::displayHelp() const {
     } else if (std::dynamic_pointer_cast<Admin>(currentUser)) {
         std::cout << "You are an Admin. Available commands:\n";
         std::cout << "- add_food <name> <cal> <prot> <carbs> <fat> <fiber>\n";
+        std::cout << "- list_foods\n";
         std::cout << "- block_user <username>\n";
         std::cout << "- logout\n";
     } else {
@@ -112,7 +114,28 @@ void CalorixSystem::addFood(const std::string& name, double calories, double pro
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
     if (!admin) throw std::runtime_error("Access denied. Admin privileges required.");
 
-    std::cout << "[ADMIN] Food '" << name << "' added to global database.\n";
+    foodManager.loadAllFoods();
+
+    Food newFood(name, calories, protein, carbs, fat, fiber);
+
+    foodManager.saveFood(newFood);
+
+    std::cout << "[ADMIN] Food '" << name << "' saved with ID: " << newFood.getId() << "\n";
+}
+
+void CalorixSystem::displayAllFoods() const {
+    auto foods = foodManager.loadAllFoods();
+    if (foods.empty()) {
+        std::cout << "Database is empty.\n";
+        return;
+    }
+
+    std::cout << "\n--- Food Database ---\n";
+    for (const auto& food : foods) {
+        std::cout << "[" << food.getId() << "] " << food.getName()
+                  << " | Cal: " << food.getCaloriesPer100g()
+                  << " | P: " << food.getProteinPer100g() << "\n";
+    }
 }
 
 void CalorixSystem::updateFood(const std::string& foodName, double newCalories) {

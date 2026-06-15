@@ -32,3 +32,7 @@ AddExerciseCommand::AddExerciseCommand(const std::string& name, double caloriesB
 void AddExerciseCommand::execute(CalorixSystem& system) {
     system.addExercise(name, caloriesBurnedPerHour, muscleGroup);
 }
+
+void ListFoodsCommand::execute(CalorixSystem& system) {
+    system.displayAllFoods();
+}

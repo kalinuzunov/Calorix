@@ -47,3 +47,8 @@ public:
     AddExerciseCommand(const std::string& name, double caloriesBurnedPerHour, MuscleGroup muscleGroup);
     void execute(CalorixSystem& system) override;
 };
+
+class ListFoodsCommand : public ICommand {
+public:
+    void execute(CalorixSystem& system) override;
+};

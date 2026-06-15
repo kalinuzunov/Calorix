@@ -1,6 +1,7 @@
 #include "FileManager.h"
 #include <fstream>
 #include <stdexcept>
+#include <iostream>
 
 std::vector<std::string> FileManager::readLines(const std::string& filename) const {
     std::vector<std::string> lines;

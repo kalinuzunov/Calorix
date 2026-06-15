@@ -8,7 +8,9 @@ using namespace Constants;
 
 FoodManager::FoodManager(const std::string& dbFilename) : filename(dbFilename) {}
 
-void FoodManager::saveFood(const Food& food) const {
+void FoodManager::saveFood(Food& food) const {
+
+
     std::string line = std::to_string(food.getId()) + Database::DELIMITER +
                        food.getName() + Database::DELIMITER +
                        std::to_string(food.getCaloriesPer100g()) + Database::DELIMITER +

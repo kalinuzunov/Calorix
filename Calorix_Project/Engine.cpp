@@ -14,7 +14,7 @@ void Engine::run() {
 
     while (isRunning) {
         std::cout << "\nCalorix> ";
-        
+
         std::string input;
         if (!std::getline(std::cin, input)) {
             break;
@@ -29,6 +29,7 @@ void Engine::run() {
             auto command = parser.parse(input);
             if (command != nullptr) {
                 command->execute(system);
+                std::cout << "\n(Type 'help' to see all commands)\n";
             }
         }
         catch (const std::exception& e) {

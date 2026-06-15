@@ -13,5 +13,5 @@ public:
 
     std::vector<Food> loadAllFoods() const;
 
-    void saveFood(const Food& food) const;
+    void saveFood(Food& food) const;
 };
