@@ -61,4 +61,6 @@ add_executable(Calorix ${SOURCES}
         Calorix_Project/Engine.cpp
         Calorix_Project/Engine.h
         Calorix_Project/main.cpp
+        Calorix_Project/managers/BlockedUserManager.cpp
+        Calorix_Project/managers/BlockedUserManager.h
 )

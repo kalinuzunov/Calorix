@@ -2,29 +2,29 @@
 #include "model/Admin.h"
 #include "model/Trainee.h"
 #include "model/Food.h"
-#include <iostream>
-#include <stdexcept>
 #include "model/Password.h"
 #include "model/UserProfile.h"
 #include "model/UserProfileBuilder.h"
+#include <iostream>
+#include <stdexcept>
 
 CalorixSystem::CalorixSystem(const std::string& usersFile, const std::string& foodsFile,
-                             const std::string& recipesFile, const std::string& exercisesFile)
+                             const std::string& recipesFile, const std::string& exercisesFile,
+                             const std::string& blockedUsersFile)
     : userManager(usersFile), foodManager(foodsFile),
       recipeManager(recipesFile), exerciseManager(exercisesFile),
+      blockedUserManager(blockedUsersFile),
       currentUser(nullptr) {
 }
 
-void CalorixSystem::initialize()const {
+void CalorixSystem::initialize() const {
     std::cout << "[SYSTEM] Calorix initialized. Data loaded.\n";
 
     std::vector<User> loadedUsers = userManager.loadAllUsers();
 
     if (loadedUsers.empty()) {
-
         Admin boss("Kalin_Uzunov", Password("kAlIn9.u"), UserProfile{});
         userManager.saveUser(boss);
-
         std::cout << "[SYSTEM] Welcome boss!\n";
     }
 }
@@ -58,9 +58,12 @@ void CalorixSystem::displayHelp() const {
     std::cout << "-------------------------\n";
 }
 
-
 void CalorixSystem::loginUser(const std::string& username, const std::string& password) {
     if (currentUser != nullptr) throw std::runtime_error("Already logged in.");
+
+    if (blockedUserManager.isUserBlocked(username)) {
+        throw std::runtime_error("Access denied: Your account has been blocked by an Administrator.");
+    }
 
     std::vector<User> loadedUsers = userManager.loadAllUsers();
     bool found = false;
@@ -116,12 +119,19 @@ void CalorixSystem::logoutUser() {
     currentUser = nullptr;
 }
 
-
 void CalorixSystem::blockUser(const std::string& targetUsername) {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
-    if (!admin) throw std::runtime_error("Access denied. Admin privileges required.");
+    if (!admin) {
+        throw std::runtime_error("Access denied. Admin privileges required.");
+    }
 
-    std::cout << "[ADMIN] User " << targetUsername << " has been blocked.\n";
+    if (blockedUserManager.isUserBlocked(targetUsername)) {
+        std::cout << "[WARNING] User '" << targetUsername << "' is already blocked.\n";
+        return;
+    }
+
+    blockedUserManager.blockUser(targetUsername);
+    std::cout << "[ADMIN] User '" << targetUsername << "' has been successfully blocked.\n";
 }
 
 void CalorixSystem::addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber) const {
@@ -188,7 +198,6 @@ void CalorixSystem::displayAllExercises() const {
                   << " | Muscle Group (0-7): " << static_cast<int>(ex.getMuscleGroup()) << "\n";
     }
 }
-
 
 void CalorixSystem::setGoal(GoalType type, double targetValue, const Date& deadline) {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);

@@ -3,7 +3,7 @@
 #include <string>
 
 Engine::Engine()
-    : system("users.txt", "foods.txt", "recipes.txt", "exercises.txt"),
+    : system("users.txt", "foods.txt", "recipes.txt", "exercises.txt","blocked_users.txt"),
       isRunning(true) {
 }
 
