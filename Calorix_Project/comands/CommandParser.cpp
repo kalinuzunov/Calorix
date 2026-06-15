@@ -50,6 +50,12 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         }
         return std::make_unique<BlockUserCommand>(args[1]);
     }
+    if (cmdName == "unblock_user") {
+        if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: unblock_user <username>");
+        }
+        return std::make_unique<UnblockUserCommand>(args[1]);
+    }
 
     if (cmdName == "register") {
         if (args.size() != Constants::Database::REGISTER_RECORD_FIELDS) {

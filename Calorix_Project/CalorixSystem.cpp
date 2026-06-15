@@ -46,6 +46,7 @@ void CalorixSystem::displayHelp() const {
         std::cout << "- add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>\n";
         std::cout << "- list_exercises\n";
         std::cout << "- block_user <username>\n";
+        std::cout << "- unblock_user <username>\n";
         std::cout << "- logout\n";
     } else {
         std::cout << "You are a Trainee. Available commands:\n";
@@ -132,6 +133,21 @@ void CalorixSystem::blockUser(const std::string& targetUsername) {
 
     blockedUserManager.blockUser(targetUsername);
     std::cout << "[ADMIN] User '" << targetUsername << "' has been successfully blocked.\n";
+}
+
+void CalorixSystem::unblockUser(const std::string& targetUsername) {
+    auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
+    if (!admin) {
+        throw std::runtime_error("Access denied. Admin privileges required.");
+    }
+
+    if (!blockedUserManager.isUserBlocked(targetUsername)) {
+        std::cout << "[WARNING] User '" << targetUsername << "' is not blocked.\n";
+        return;
+    }
+
+    blockedUserManager.unblockUser(targetUsername);
+    std::cout << "[ADMIN] User '" << targetUsername << "' has been successfully unblocked.\n";
 }
 
 void CalorixSystem::addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber) const {

@@ -4,6 +4,12 @@
 BlockUserCommand::BlockUserCommand(const std::string& targetUsername)
     : targetUsername(targetUsername) {}
 
+UnblockUserCommand::UnblockUserCommand(const std::string& username) : targetUsername(username) {}
+
+void UnblockUserCommand::execute(CalorixSystem& system) {
+    system.unblockUser(targetUsername);
+}
+
 void BlockUserCommand::execute(CalorixSystem& system) {
     system.blockUser(targetUsername);
 }

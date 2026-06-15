@@ -38,6 +38,7 @@ public:
     void shutdown();
 
     void blockUser(const std::string& targetUsername);
+    void unblockUser(const std::string& targetUsername);
     void addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber) const;
     void displayAllFoods() const;
     void updateFood(const std::string& foodName, double newCalories);

@@ -11,4 +11,5 @@ public:
 
     bool isUserBlocked(const std::string& username) const;
     void blockUser(const std::string& username) const;
+    void unblockUser(const std::string& username) const;
 };

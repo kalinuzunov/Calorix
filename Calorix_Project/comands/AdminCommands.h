@@ -12,6 +12,13 @@ public:
     void execute(CalorixSystem& system) override;
 };
 
+class UnblockUserCommand : public ICommand {
+    std::string targetUsername;
+public:
+    explicit UnblockUserCommand(const std::string& username);
+    void execute(CalorixSystem& system) override;
+};
+
 class AddFoodCommand : public ICommand {
 private:
     std::string name;
