@@ -42,6 +42,7 @@ void CalorixSystem::displayHelp() const {
     } else if (std::dynamic_pointer_cast<Admin>(currentUser)) {
         std::cout << "You are an Admin. Available commands:\n";
         std::cout << "- add_food <name> <cal> <prot> <carbs> <fat> <fiber>\n";
+        std::cout << "- add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>\n";
         std::cout << "- list_foods\n";
         std::cout << "- block_user <username>\n";
         std::cout << "- logout\n";
@@ -159,9 +160,17 @@ void CalorixSystem::updateFood(const std::string& foodName, double newCalories) 
 
 void CalorixSystem::addExercise(const std::string& name, double caloriesBurnedPerHour, MuscleGroup muscleGroup) {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
-    if (!admin) throw std::runtime_error("Access denied. Admin privileges required.");
+    if (!admin) {
+        throw std::runtime_error("Access denied. Admin privileges required.");
+    }
 
-    std::cout << "[ADMIN] Exercise '" << name << "' added to global database.\n";
+    exerciseManager.loadAllExercises();
+
+    Exercise newExercise(name, caloriesBurnedPerHour, muscleGroup);
+
+    exerciseManager.saveExercise(newExercise);
+
+    std::cout << "[ADMIN] Exercise '" << name << "' saved with ID: " << newExercise.getExerciseId() << "\n";
 }
 
 

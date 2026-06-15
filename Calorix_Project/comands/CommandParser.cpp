@@ -7,8 +7,6 @@
 #include <stdexcept>
 #include "../Constants.h"
 
-
-
 std::vector<std::string> CommandParser::splitArguments(const std::string& input) const {
     std::vector<std::string> args;
     std::string currentWord = "";
@@ -44,12 +42,14 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
     if (cmdName == "end") return std::make_unique<EndCommand>();
     if (cmdName == "logout") return std::make_unique<LogoutCommand>();
     if (cmdName == "list_foods") return std::make_unique<ListFoodsCommand>();
+
     if (cmdName == "block_user") {
         if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: block_user <username>");
         }
         return std::make_unique<BlockUserCommand>(args[1]);
     }
+
     if (cmdName == "register") {
         if (args.size() != Constants::Database::REGISTER_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: register <username> <password> <age> <weight> <height> <gender(0/1)>");
@@ -69,6 +69,22 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         }
     }
 
+    if (cmdName == "add_exercise") {
+        if (args.size() != Constants::Database::EXERCISE_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>");
+        }
+
+        try {
+            std::string exName = args[1];
+            double calPerHour = std::stod(args[2]);
+            MuscleGroup group = static_cast<MuscleGroup>(std::stoi(args[3]));
+
+            return std::make_unique<AddExerciseCommand>(exName, calPerHour, group);
+
+        } catch (const std::invalid_argument& e) {
+            throw InvalidCommandException("Calories per hour and muscle group must be valid numbers!");
+        }
+    }
 
     if (cmdName == "login") {
         if (args.size() != Constants::Database::LOGIN_RECORD_FIELDS) {
