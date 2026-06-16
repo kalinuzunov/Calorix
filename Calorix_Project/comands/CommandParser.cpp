@@ -5,6 +5,8 @@
 #include "../model/CalorixExceptions.h"
 #include <string>
 #include <stdexcept>
+
+#include "TraineeCommands.h"
 #include "../Constants.h"
 
 std::vector<std::string> CommandParser::splitArguments(const std::string& input) const {
@@ -118,6 +120,12 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         } catch (const std::invalid_argument& e) {
             throw InvalidCommandException("Calories and macros must be valid numbers!");
         }
+    }
+    if (cmdName == "log_food") {
+        if (args.size() != Constants::Database::ADD_FOOD_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: log_food <food_name> <grams>");
+        }
+        return std::make_unique<LogFoodCommand>(args[1], std::stod(args[2]));
     }
 
     throw InvalidCommandException("Unknown command: " + cmdName + ". Type 'help' to see available commands.");

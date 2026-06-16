@@ -39,9 +39,8 @@ namespace Constants {
         inline constexpr unsigned FEBRUARY_INDEX = 2;
         inline constexpr unsigned MAX_MONTHS = 12;
 
-        inline constexpr unsigned DEFAULT_YEAR = 2000;
-        inline constexpr unsigned DEFAULT_MONTH = 1;
-        inline constexpr unsigned DEFAULT_DAY = 1;
+        const unsigned TM_YEAR_OFFSET = 1900;
+        const unsigned TM_MONTH_OFFSET = 1;
 
         inline constexpr unsigned MONTHS_IN_YEAR = 12;
         inline constexpr unsigned MAX_DAYS_IN_MONTH = 31;
@@ -162,6 +161,7 @@ namespace Constants {
     namespace Database {
         inline constexpr char DELIMITER = '|';
         inline constexpr size_t FOOD_RECORD_FIELDS = 7;
+        inline constexpr size_t ADD_FOOD_RECORD_FIELDS = 3;
         inline constexpr size_t LOGIN_RECORD_FIELDS = 3;
         inline constexpr size_t BLOCK_RECORD_FIELDS = 2;
         inline constexpr size_t REGISTER_RECORD_FIELDS = 7;

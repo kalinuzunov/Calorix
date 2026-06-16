@@ -51,7 +51,9 @@ void CalorixSystem::displayHelp() const {
     } else {
         std::cout << "You are a Trainee. Available commands:\n";
         std::cout << "- log_food <name> <grams>\n";
+        std::cout << "- list_foods\n";
         std::cout << "- log_exercise <name> <minutes>\n";
+        std::cout << "- list_exercises\n";
         std::cout << "- view_summary\n";
         std::cout << "- logout\n";
     }
@@ -224,9 +226,33 @@ void CalorixSystem::setGoal(GoalType type, double targetValue, const Date& deadl
 
 void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied. Trainee privileges required.");
+    if (!trainee) {
+        throw std::runtime_error("Access denied. Trainee privileges required to log food.");
+    }
 
-    std::cout << "[TRAINEE] Logged " << quantityGrams << "g of " << foodName << ".\n";
+    std::vector<Food> allFoods = foodManager.loadAllFoods();
+    bool found = false;
+
+    for (const auto& food : allFoods) {
+        if (food.getName() == foodName) {
+
+            auto consumableItem = std::make_shared<Food>(food);
+
+            Date today;
+            FoodEntry entry(consumableItem, quantityGrams, today);
+
+            trainee->logFood(entry);
+            found = true;
+
+            std::cout << "[TRAINEE] Successfully logged " << quantityGrams << "g of " << foodName << ".\n";
+            std::cout << "          Added " << entry.getTotalCalories() << " kcal to your diary.\n";
+            break;
+        }
+    }
+
+    if (!found) {
+        std::cout << "[ERROR] Food '" << foodName << "' not found in the database. Use 'list_foods' to see available options.\n";
+    }
 }
 
 void CalorixSystem::logExercise(const std::string& exerciseName, int durationMinutes) {

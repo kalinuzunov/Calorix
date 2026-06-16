@@ -2,6 +2,7 @@
 #include "../Constants.h"
 #include "CalorixExceptions.h"
 #include <string>
+#include <ctime>
 
 using namespace Constants;
 
@@ -24,9 +25,14 @@ bool Date::isValid(unsigned y, unsigned m, unsigned d) const {
     if (y == 0 || m == 0 || m > DateLimits::MAX_MONTHS || d == 0) return false;
     return d <= getDaysInMonth(m, y);
 }
+Date::Date() {
+    std::time_t t = std::time(nullptr);
+    std::tm* now = std::localtime(&t);
 
-Date::Date()
-    : year(DateLimits::DEFAULT_YEAR), month(DateLimits::DEFAULT_MONTH), day(DateLimits::DEFAULT_DAY) {}
+    year = now->tm_year + DateLimits::TM_YEAR_OFFSET;
+    month = now->tm_mon + DateLimits::TM_MONTH_OFFSET;
+    day = now->tm_mday;
+}
 
 Date::Date(unsigned y, unsigned m, unsigned d) {
     if (!isValid(y, m, d)) {
