@@ -127,6 +127,12 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         }
         return std::make_unique<LogFoodCommand>(args[1], std::stod(args[2]));
     }
+    if (cmdName == "log_exercise") {
+        if (args.size() != Constants::Database::ADD_EXCERCISE_FIELDS) {
+            throw InvalidCommandException("Usage: log_exercise <exercise_name> <duration_minutes>");
+        }
+        return std::make_unique<LogExerciseCommand>(args[1], std::stoi(args[2]));
+    }
 
     throw InvalidCommandException("Unknown command: " + cmdName + ". Type 'help' to see available commands.");
 }

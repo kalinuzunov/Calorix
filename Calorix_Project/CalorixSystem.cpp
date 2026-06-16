@@ -229,7 +229,6 @@ void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
     if (!trainee) {
         throw std::runtime_error("Access denied. Trainee privileges required to log food.");
     }
-
     std::vector<Food> allFoods = foodManager.loadAllFoods();
     bool found = false;
 
@@ -257,9 +256,33 @@ void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
 
 void CalorixSystem::logExercise(const std::string& exerciseName, int durationMinutes) {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw std::runtime_error("Access denied. Trainee privileges required to log exercise.");
+    }
 
-    std::cout << "[TRAINEE] Logged " << durationMinutes << " minutes of " << exerciseName << ".\n";
+    auto allExercises = exerciseManager.loadAllExercises();
+    bool found = false;
+
+    for (const auto& exercise : allExercises) {
+        if (exercise.getName() == exerciseName) {
+
+            unsigned exId = exercise.getExerciseId();
+
+            Date today;
+            ExerciseEntry entry(exId, durationMinutes, today);
+
+            trainee->logExercise(entry);
+            found = true;
+
+            std::cout << "[TRAINEE] Successfully logged " << durationMinutes << " minutes of " << exerciseName << ".\n";
+
+            break;
+        }
+    }
+
+    if (!found) {
+        std::cout << "[ERROR] Exercise '" << exerciseName << "' not found in the database. Use 'list_exercises' to see available options.\n";
+    }
 }
 
 void CalorixSystem::viewDailySummary() const {
