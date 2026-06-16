@@ -8,6 +8,8 @@
 #include <iostream>
 #include <stdexcept>
 
+#include "Constants.h"
+
 CalorixSystem::CalorixSystem(const std::string& usersFile, const std::string& foodsFile,
                              const std::string& recipesFile, const std::string& exercisesFile,
                              const std::string& blockedUsersFile)
@@ -287,9 +289,54 @@ void CalorixSystem::logExercise(const std::string& exerciseName, int durationMin
 
 void CalorixSystem::viewDailySummary() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw std::runtime_error("Access denied. Trainee privileges required to view summary.");
+    }
 
-    std::cout << "[TRAINEE] Displaying daily summary...\n";
+    std::cout << "\n=== Daily Summary for " << trainee->getUsername() << " ===\n";
+
+    double totalConsumed = 0.0;
+    double totalProtein = 0.0;
+    double totalCarbs = 0.0;
+    double totalFat = 0.0;
+    double totalFiber = 0.0;
+
+    const auto& foodDiary = trainee->getFoodDiary();
+
+    for (const auto& entry : foodDiary) {
+        totalConsumed += entry.getTotalCalories();
+        totalProtein += entry.getTotalProtein();
+        totalCarbs += entry.getTotalCarbs();
+        totalFat += entry.getTotalFat();
+        totalFiber += entry.getTotalFiber();
+    }
+
+    double totalBurned = 0.0;
+    const auto& exerciseDiary = trainee->getExerciseDiary();
+    auto allExercises = exerciseManager.loadAllExercises();
+
+    for (const auto& entry : exerciseDiary) {
+        unsigned targetId = entry.getExerciseId();
+
+        for (const auto& ex : allExercises) {
+            if (ex.getExerciseId() == targetId) {
+                totalBurned += (entry.getDurationMinutes() / Constants::ExerciseLimits::MINUTES_IN_HOUR) * ex.getCaloriesBurnedPerHour();
+                break;
+            }
+        }
+    }
+
+    double netCalories = totalConsumed - totalBurned;
+
+    std::cout << "--- Macros Consumed ---\n";
+    std::cout << "Protein: " << totalProtein << "g | Carbs: " << totalCarbs
+                  << "g | Fat: " << totalFat << "g | Fiber: " << totalFiber << "g\n";
+    std::cout << "------------------------------------\n";
+    std::cout << "Calories Consumed:  " << totalConsumed << " kcal\n";
+    std::cout << "Calories Burned:    " << totalBurned << " kcal\n";
+    std::cout << "------------------------------------\n";
+    std::cout << "Net Calories:       " << netCalories << " kcal\n";
+    std::cout << "====================================\n\n";
 }
 
 void CalorixSystem::viewProgress() const {

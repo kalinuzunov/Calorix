@@ -133,6 +133,12 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         }
         return std::make_unique<LogExerciseCommand>(args[1], std::stoi(args[2]));
     }
+    if (cmdName == "view_summary") {
+        if (!args.empty() && args[0] != "view_summary") {
+            throw InvalidCommandException("Usage: view_summary (no arguments needed)");
+        }
+        return std::make_unique<ViewDailySummaryCommand>();
+    }
 
     throw InvalidCommandException("Unknown command: " + cmdName + ". Type 'help' to see available commands.");
 }
