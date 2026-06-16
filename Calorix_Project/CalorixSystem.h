@@ -8,6 +8,7 @@
 #include "managers/RecipeManager.h"
 #include "managers/ExerciseManager.h"
 #include "managers/BlockedUserManager.h"
+#include "managers/DiaryManager.h"
 
 #include "model/User.h"
 #include "model/Enums.h"
@@ -20,20 +21,21 @@ private:
     RecipeManager recipeManager;
     ExerciseManager exerciseManager;
     BlockedUserManager blockedUserManager;
+    DiaryManager diaryManager;
 
     std::shared_ptr<User> currentUser;
 
 public:
     CalorixSystem(const std::string& usersFile, const std::string& foodsFile,
-                      const std::string& recipesFile, const std::string& exercisesFile,
-                      const std::string& blockedUsersFile);
+                  const std::string& recipesFile, const std::string& exercisesFile,
+                  const std::string& blockedUsersFile);
 
     void loginUser(const std::string& username, const std::string& password);
     void registerUser(const std::string& username, const std::string& password,
                       unsigned age, double weight, double height, Gender gender);
     void logoutUser();
 
-    void initialize()const;
+    void initialize() const;
     void displayHelp() const;
     void shutdown();
 

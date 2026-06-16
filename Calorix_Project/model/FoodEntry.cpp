@@ -66,6 +66,10 @@ double FoodEntry::getTotalFiber() const {
     return (consumableItem->getFiberPer100g() / FoodLimits::BASE_GRAMS_UNIT) * weightGrams;
 }
 
+std::shared_ptr<IConsumable> FoodEntry::getConsumable() const {
+    return consumableItem;
+}
+
 void FoodEntry::updateNextId(unsigned loadedId) {
     if (loadedId >= nextId) {
         nextId = loadedId + 1;

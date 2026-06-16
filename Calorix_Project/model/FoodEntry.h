@@ -26,6 +26,7 @@ public:
     double getTotalCarbs() const;
     double getTotalFat() const;
     double getTotalFiber() const;
+    std::shared_ptr<IConsumable> getConsumable() const;
 
     static void updateNextId(unsigned loadedId);
 };

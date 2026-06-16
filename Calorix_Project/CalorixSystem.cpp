@@ -16,6 +16,7 @@ CalorixSystem::CalorixSystem(const std::string& usersFile, const std::string& fo
     : userManager(usersFile), foodManager(foodsFile),
       recipeManager(recipesFile), exerciseManager(exercisesFile),
       blockedUserManager(blockedUsersFile),
+      diaryManager("food_logs.txt", "exercise_logs.txt"),
       currentUser(nullptr) {
 }
 
@@ -79,6 +80,9 @@ void CalorixSystem::loginUser(const std::string& username, const std::string& pa
                 currentUser = std::make_shared<Admin>(username, Password(password), user.getProfile());
             } else {
                 currentUser = std::make_shared<Trainee>(user.getUserId(), username, Password(password), user.getProfile());
+
+                auto traineePtr = std::dynamic_pointer_cast<Trainee>(currentUser);
+                diaryManager.loadUserLogs(*traineePtr, foodManager, exerciseManager);
             }
             found = true;
             break;
@@ -231,22 +235,25 @@ void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
     if (!trainee) {
         throw std::runtime_error("Access denied. Trainee privileges required to log food.");
     }
+
     std::vector<Food> allFoods = foodManager.loadAllFoods();
     bool found = false;
 
     for (const auto& food : allFoods) {
         if (food.getName() == foodName) {
-
             auto consumableItem = std::make_shared<Food>(food);
-
             Date today;
             FoodEntry entry(consumableItem, quantityGrams, today);
 
             trainee->logFood(entry);
+            diaryManager.saveFoodLog(trainee->getUsername(), entry);
+
             found = true;
 
+            double caloriesAdded = (quantityGrams / 100.0) * food.getCaloriesPer100g();
+
             std::cout << "[TRAINEE] Successfully logged " << quantityGrams << "g of " << foodName << ".\n";
-            std::cout << "          Added " << entry.getTotalCalories() << " kcal to your diary.\n";
+            std::cout << "          Added " << caloriesAdded << " kcal to your diary.\n";
             break;
         }
     }
@@ -267,17 +274,16 @@ void CalorixSystem::logExercise(const std::string& exerciseName, int durationMin
 
     for (const auto& exercise : allExercises) {
         if (exercise.getName() == exerciseName) {
-
             unsigned exId = exercise.getExerciseId();
-
             Date today;
             ExerciseEntry entry(exId, durationMinutes, today);
 
             trainee->logExercise(entry);
+            diaryManager.saveExerciseLog(trainee->getUsername(), entry);
+
             found = true;
 
             std::cout << "[TRAINEE] Successfully logged " << durationMinutes << " minutes of " << exerciseName << ".\n";
-
             break;
         }
     }
@@ -293,7 +299,10 @@ void CalorixSystem::viewDailySummary() const {
         throw std::runtime_error("Access denied. Trainee privileges required to view summary.");
     }
 
-    std::cout << "\n=== Daily Summary for " << trainee->getUsername() << " ===\n";
+    Date today;
+    std::string todayStr = today.toString();
+
+    std::cout << "\n=== Daily Summary for " << trainee->getUsername() << " (" << todayStr << ") ===\n";
 
     double totalConsumed = 0.0;
     double totalProtein = 0.0;
@@ -304,24 +313,28 @@ void CalorixSystem::viewDailySummary() const {
     const auto& foodDiary = trainee->getFoodDiary();
 
     for (const auto& entry : foodDiary) {
-        totalConsumed += entry.getTotalCalories();
-        totalProtein += entry.getTotalProtein();
-        totalCarbs += entry.getTotalCarbs();
-        totalFat += entry.getTotalFat();
-        totalFiber += entry.getTotalFiber();
+        if (entry.getDate().toString() == todayStr) {
+            totalConsumed += entry.getTotalCalories();
+            totalProtein += entry.getTotalProtein();
+            totalCarbs += entry.getTotalCarbs();
+            totalFat += entry.getTotalFat();
+            totalFiber += entry.getTotalFiber();
+        }
     }
 
-    double totalBurned = 0.0;
+    double totalBurned = Constants::Global::ZERO;
     const auto& exerciseDiary = trainee->getExerciseDiary();
     auto allExercises = exerciseManager.loadAllExercises();
 
     for (const auto& entry : exerciseDiary) {
-        unsigned targetId = entry.getExerciseId();
+        if (entry.getDate().toString() == todayStr) {
+            unsigned targetId = entry.getExerciseId();
 
-        for (const auto& ex : allExercises) {
-            if (ex.getExerciseId() == targetId) {
-                totalBurned += (entry.getDurationMinutes() / Constants::ExerciseLimits::MINUTES_IN_HOUR) * ex.getCaloriesBurnedPerHour();
-                break;
+            for (const auto& ex : allExercises) {
+                if (ex.getExerciseId() == targetId) {
+                    totalBurned += (entry.getDurationMinutes() / 60.0) * ex.getCaloriesBurnedPerHour();
+                    break;
+                }
             }
         }
     }
@@ -330,7 +343,7 @@ void CalorixSystem::viewDailySummary() const {
 
     std::cout << "--- Macros Consumed ---\n";
     std::cout << "Protein: " << totalProtein << "g | Carbs: " << totalCarbs
-                  << "g | Fat: " << totalFat << "g | Fiber: " << totalFiber << "g\n";
+              << "g | Fat: " << totalFat << "g | Fiber: " << totalFiber << "g\n";
     std::cout << "------------------------------------\n";
     std::cout << "Calories Consumed:  " << totalConsumed << " kcal\n";
     std::cout << "Calories Burned:    " << totalBurned << " kcal\n";

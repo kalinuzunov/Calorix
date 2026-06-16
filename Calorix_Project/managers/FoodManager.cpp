@@ -61,3 +61,16 @@ std::vector<Food> FoodManager::loadAllFoods() const {
 
     return loadedFoods;
 }
+
+std::shared_ptr<Food> FoodManager::getFoodById(unsigned id) const {
+    std::vector<Food> allFoods = loadAllFoods();
+
+    for (const auto& food : allFoods) {
+        if (food.getId() == id) {
+            return std::make_shared<Food>(food);
+        }
+    }
+
+    throw std::runtime_error("Food with ID " + std::to_string(id) + " not found.");
+}
+
