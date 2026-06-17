@@ -2,12 +2,11 @@
 #include "LoginCommands.h"
 #include "GeneralCommands.h"
 #include "AdminCommands.h"
+#include "TraineeCommands.h"
 #include "../model/CalorixExceptions.h"
+#include "../Constants.h"
 #include <string>
 #include <stdexcept>
-
-#include "TraineeCommands.h"
-#include "../Constants.h"
 
 std::vector<std::string> CommandParser::splitArguments(const std::string& input) const {
     std::vector<std::string> args;
@@ -40,30 +39,26 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
 
     std::string cmdName = args[0];
 
+
     if (cmdName == "help") return std::make_unique<HelpCommand>();
     if (cmdName == "end") return std::make_unique<EndCommand>();
-    if (cmdName == "logout") return std::make_unique<LogoutCommand>();
     if (cmdName == "list_foods") return std::make_unique<ListFoodsCommand>();
     if (cmdName == "list_exercises") return std::make_unique<ListExercisesCommand>();
 
-    if (cmdName == "block_user") {
-        if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
-            throw InvalidCommandException("Usage: block_user <username>");
+
+    if (cmdName == "login") {
+        if (args.size() != Constants::Database::LOGIN_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: login <username> <password>");
         }
-        return std::make_unique<BlockUserCommand>(args[1]);
+        return std::make_unique<LoginCommand>(args[1], args[2]);
     }
-    if (cmdName == "unblock_user") {
-        if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
-            throw InvalidCommandException("Usage: unblock_user <username>");
-        }
-        return std::make_unique<UnblockUserCommand>(args[1]);
-    }
+
+    if (cmdName == "logout") return std::make_unique<LogoutCommand>();
 
     if (cmdName == "register") {
         if (args.size() != Constants::Database::REGISTER_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: register <username> <password> <age> <weight> <height> <gender(0/1)>");
         }
-
         try {
             std::string username = args[1];
             std::string password = args[2];
@@ -78,35 +73,25 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         }
     }
 
-    if (cmdName == "add_exercise") {
-        if (args.size() != Constants::Database::EXERCISE_RECORD_FIELDS) {
-            throw InvalidCommandException("Usage: add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>");
+
+    if (cmdName == "block_user") {
+        if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: block_user <username>");
         }
-
-        try {
-            std::string exName = args[1];
-            double calPerHour = std::stod(args[2]);
-            MuscleGroup group = static_cast<MuscleGroup>(std::stoi(args[3]));
-
-            return std::make_unique<AddExerciseCommand>(exName, calPerHour, group);
-
-        } catch (const std::invalid_argument& e) {
-            throw InvalidCommandException("Calories per hour and muscle group must be valid numbers!");
-        }
+        return std::make_unique<BlockUserCommand>(args[1]);
     }
 
-    if (cmdName == "login") {
-        if (args.size() != Constants::Database::LOGIN_RECORD_FIELDS) {
-            throw InvalidCommandException("Usage: login <username> <password>");
+    if (cmdName == "unblock_user") {
+        if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: unblock_user <username>");
         }
-        return std::make_unique<LoginCommand>(args[1], args[2]);
+        return std::make_unique<UnblockUserCommand>(args[1]);
     }
 
     if (cmdName == "add_food") {
         if (args.size() != Constants::Database::FOOD_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: add_food <name> <cal> <prot> <carbs> <fat> <fiber>");
         }
-
         try {
             std::string foodName = args[1];
             double calories = std::stod(args[2]);
@@ -116,29 +101,62 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
             double fiber = std::stod(args[6]);
 
             return std::make_unique<AddFoodCommand>(foodName, calories, protein, carbs, fat, fiber);
-
         } catch (const std::invalid_argument& e) {
             throw InvalidCommandException("Calories and macros must be valid numbers!");
         }
     }
+
+    if (cmdName == "add_exercise") {
+        if (args.size() != Constants::Database::EXERCISE_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>");
+        }
+        try {
+            std::string exName = args[1];
+            double calPerHour = std::stod(args[2]);
+            MuscleGroup group = static_cast<MuscleGroup>(std::stoi(args[3]));
+
+            return std::make_unique<AddExerciseCommand>(exName, calPerHour, group);
+        } catch (const std::invalid_argument& e) {
+            throw InvalidCommandException("Calories per hour and muscle group must be valid numbers!");
+        }
+    }
+
+
     if (cmdName == "log_food") {
         if (args.size() != Constants::Database::ADD_FOOD_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: log_food <food_name> <grams>");
         }
         return std::make_unique<LogFoodCommand>(args[1], std::stod(args[2]));
     }
+
     if (cmdName == "log_exercise") {
         if (args.size() != Constants::Database::ADD_EXCERCISE_FIELDS) {
             throw InvalidCommandException("Usage: log_exercise <exercise_name> <duration_minutes>");
         }
         return std::make_unique<LogExerciseCommand>(args[1], std::stoi(args[2]));
     }
+
     if (cmdName == "view_summary") {
-        if (!args.empty() && args[0] != "view_summary") {
+        if (args.size() > 1) {
             throw InvalidCommandException("Usage: view_summary (no arguments needed)");
         }
         return std::make_unique<ViewDailySummaryCommand>();
     }
+
+    if (cmdName == "calculate_bmi") {
+        if (args.size() > 1) {
+            throw InvalidCommandException("Usage: calculate_bmi (no arguments needed)");
+        }
+        return std::make_unique<CalculateBMICommand>();
+    }
+
+    if (cmdName == "calculate_bmr") {
+        if (args.size() > 1) {
+            throw InvalidCommandException("Usage: calculate_bmr (no arguments needed)");
+        }
+        return std::make_unique<CalculateBMRCommand>();
+    }
+
 
     throw InvalidCommandException("Unknown command: " + cmdName + ". Type 'help' to see available commands.");
 }

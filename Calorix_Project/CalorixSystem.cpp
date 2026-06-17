@@ -5,6 +5,10 @@
 #include "model/Password.h"
 #include "model/UserProfile.h"
 #include "model/UserProfileBuilder.h"
+#include "model/MifflinStJeorStrategy.h"
+#include "model/HarrisBenedictStrategy.h"
+#include "model/WHOStrategy.h"
+
 #include <iostream>
 #include <stdexcept>
 
@@ -58,6 +62,8 @@ void CalorixSystem::displayHelp() const {
         std::cout << "- log_exercise <name> <minutes>\n";
         std::cout << "- list_exercises\n";
         std::cout << "- view_summary\n";
+        std::cout << "- calculate_bmi\n";
+        std::cout << "- calculate_bmr\n";
         std::cout << "- logout\n";
     }
     std::cout << "- end (Closes the application)\n";
@@ -361,16 +367,61 @@ void CalorixSystem::viewProgress() const {
 
 void CalorixSystem::calculateBMI() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw std::runtime_error("Access denied. Trainee privileges required.");
+    }
 
-    std::cout << "[TRAINEE] Calculating BMI...\n";
+    const UserProfile& profile = trainee->getProfile();
+    double weight = profile.getWeight();
+
+    double heightMeters = profile.getHeight() / Constants::HealthFormulas::CENTIMETERS_IN_METER;
+
+    if (heightMeters <= Constants::Global::ZERO) {
+        std::cout << "[ERROR] Invalid height in profile.\n";
+        return;
+    }
+
+    double bmi = weight / (heightMeters * heightMeters);
+
+    std::cout << "\n=== BMI Calculator ===\n";
+    std::cout << "Height: " << profile.getHeight() << " cm | Weight: " << weight << " kg\n";
+    std::cout << "Your BMI: " << bmi << "\n";
+
+    std::cout << "Category: ";
+    if (bmi < Constants::HealthFormulas::BMI::UNDERWEIGHT_THRESHOLD) {
+        std::cout << "Underweight\n";
+    } else if (bmi < Constants::HealthFormulas::BMI::NORMAL_WEIGHT_THRESHOLD) {
+        std::cout << "Normal weight\n";
+    } else if (bmi < Constants::HealthFormulas::BMI::OVERWEIGHT_THRESHOLD) {
+        std::cout << "Overweight\n";
+    } else {
+        std::cout << "Obese\n";
+    }
+    std::cout << "======================\n\n";
 }
 
 void CalorixSystem::calculateBMR() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw std::runtime_error("Access denied. Trainee privileges required.");
+    }
 
-    std::cout << "[TRAINEE] Calculating BMR...\n";
+    const UserProfile& profile = trainee->getProfile();
+
+    MifflinStJeorStrategy mifflin;
+    HarrisBenedictStrategy harris;
+    WHOStrategy who;
+
+    std::cout << "\n=== BMR Calculator (Basal Metabolic Rate) ===\n";
+    std::cout << "Profile Stats -> Age: " << profile.getAge()
+              << " | Weight: " << profile.getWeight()
+              << "kg | Height: " << profile.getHeight() << "cm\n\n";
+
+    std::cout << "Calories needed to maintain basic bodily functions at rest:\n";
+    std::cout << "- Mifflin-St Jeor formula: " << mifflin.calculateBMR(profile) << " kcal/day\n";
+    std::cout << "- Harris-Benedict formula: " << harris.calculateBMR(profile) << " kcal/day\n";
+    std::cout << "- WHO guidelines formula:  " << who.calculateBMR(profile) << " kcal/day\n";
+    std::cout << "===============================================\n\n";
 }
 
 void CalorixSystem::generateWorkoutPlan(int durationMinutes) const {

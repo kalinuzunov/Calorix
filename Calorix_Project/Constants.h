@@ -156,6 +156,11 @@ namespace Constants {
             inline constexpr double FEMALE_60_PLUS_MULT = 10.5;
             inline constexpr double FEMALE_60_PLUS_BASE = 596.0;
         }
+        namespace BMI {
+            inline constexpr double UNDERWEIGHT_THRESHOLD = 18.5;
+            inline constexpr double NORMAL_WEIGHT_THRESHOLD = 25.0;
+            inline constexpr double OVERWEIGHT_THRESHOLD = 30.0;
+        }
     }
 
     namespace Database {
