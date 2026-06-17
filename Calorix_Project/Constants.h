@@ -166,6 +166,7 @@ namespace Constants {
     namespace Database {
         inline constexpr char DELIMITER = '|';
         inline constexpr size_t FOOD_RECORD_FIELDS = 7;
+        inline constexpr size_t UPDATE_FOOD_RECORD_FIELDS = 3;
         inline constexpr size_t ADD_FOOD_RECORD_FIELDS = 3;
         inline constexpr size_t ADD_EXCERCISE_FIELDS = 3;
         inline constexpr size_t LOGIN_RECORD_FIELDS = 3;

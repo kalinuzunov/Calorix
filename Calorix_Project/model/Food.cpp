@@ -41,6 +41,13 @@ Food::Food(unsigned id, const std::string& name, double calories, double protein
         }
 }
 
+void Food::setCalories(double newCalories) {
+    if (newCalories < Constants::Global::ZERO) {
+        throw InvalidMacroException("Calories cannot be negative!");
+    }
+    caloriesPer100g = newCalories;
+}
+
 unsigned Food::getId() const {
     return id;
 }

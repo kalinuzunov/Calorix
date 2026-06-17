@@ -37,3 +37,15 @@ public:
     explicit InvalidCommandException(const std::string& message)
         : std::invalid_argument(message) {}
 };
+
+class UnauthorizedAccessException : public std::invalid_argument {
+public:
+    explicit UnauthorizedAccessException(const std::string& message)
+        : std::invalid_argument("Access Error: " + message) {}
+};
+
+class AuthenticationException : public std::invalid_argument {
+public:
+    explicit AuthenticationException(const std::string& message)
+        : std::invalid_argument("Authentication Error: " + message) {}
+};

@@ -106,6 +106,19 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         }
     }
 
+    if (cmdName == "update_food") {
+        if (args.size() != Constants::Database::UPDATE_FOOD_RECORD_FIELDS) {
+            throw InvalidCommandException("Usage: update_food <name> <new_calories>");
+        }
+        try {
+            std::string foodName = args[1];
+            double newCalories = std::stod(args[2]);
+            return std::make_unique<UpdateFoodCommand>(foodName, newCalories);
+        } catch (const std::invalid_argument& e) {
+            throw InvalidCommandException("Calories must be a valid number!");
+        }
+    }
+
     if (cmdName == "add_exercise") {
         if (args.size() != Constants::Database::EXERCISE_RECORD_FIELDS) {
             throw InvalidCommandException("Usage: add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>");

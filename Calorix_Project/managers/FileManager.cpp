@@ -1,6 +1,6 @@
 #include "FileManager.h"
+#include "../model/CalorixExceptions.h"
 #include <fstream>
-#include <stdexcept>
 #include <iostream>
 
 std::vector<std::string> FileManager::readLines(const std::string& filename) const {
@@ -8,7 +8,7 @@ std::vector<std::string> FileManager::readLines(const std::string& filename) con
     std::ifstream file(filename);
 
     if (!file.is_open()) {
-        return lines; 
+        return lines;
     }
 
     std::string currentLine;
@@ -26,7 +26,7 @@ void FileManager::overwriteFile(const std::string& filename, const std::vector<s
     std::ofstream file(filename, std::ios::out | std::ios::trunc);
 
     if (!file.is_open()) {
-        throw std::runtime_error("Critical Error: Could not open file for writing -> " + filename);
+        throw InvalidCommandException("Critical Error: Could not open file for writing -> " + filename);
     }
 
     for (const auto& line : lines) {
@@ -40,7 +40,7 @@ void FileManager::appendLine(const std::string& filename, const std::string& lin
     std::ofstream file(filename, std::ios::out | std::ios::app);
 
     if (!file.is_open()) {
-        throw std::runtime_error("Critical Error: Could not open file for appending -> " + filename);
+        throw InvalidCommandException("Critical Error: Could not open file for appending -> " + filename);
     }
 
     file << line << "\n";

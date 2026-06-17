@@ -17,6 +17,8 @@ public:
 
     Food(unsigned id, const std::string& name, double calories, double protein, double carbs, double fat, double fiber);
 
+    void setCalories(double newCalories);
+
     unsigned getId() const override;
     std::string getName() const override;
     double getCaloriesPer100g() const override;

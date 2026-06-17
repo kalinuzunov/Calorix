@@ -1,8 +1,8 @@
 #include "DiaryManager.h"
+#include "../model/CalorixExceptions.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <stdexcept>
 
 DiaryManager::DiaryManager(const std::string& foodFile, const std::string& exerciseFile)
     : foodLogsFile(foodFile), exerciseLogsFile(exerciseFile) {
@@ -11,21 +11,21 @@ DiaryManager::DiaryManager(const std::string& foodFile, const std::string& exerc
 void DiaryManager::saveFoodLog(const std::string& username, const FoodEntry& entry) const {
     std::ofstream file(foodLogsFile, std::ios::app);
     if (!file.is_open()) {
-        throw std::runtime_error("Could not open food logs file for writing.");
+        throw InvalidCommandException("Could not open food logs file for writing.");
     }
 
     unsigned foodId = entry.getConsumable()->getId();
-    file << username << " " 
-         << entry.getEntryId() << " " 
-         << foodId << " " 
-         << entry.getWeight() << " " 
+    file << username << " "
+         << entry.getEntryId() << " "
+         << foodId << " "
+         << entry.getWeight() << " "
          << entry.getDate().toString() << "\n";
 }
 
 void DiaryManager::saveExerciseLog(const std::string& username, const ExerciseEntry& entry) const {
     std::ofstream file(exerciseLogsFile, std::ios::app);
     if (!file.is_open()) {
-        throw std::runtime_error("Could not open exercise logs file for writing.");
+        throw InvalidCommandException("Could not open exercise logs file for writing.");
     }
 
     file << username << " "

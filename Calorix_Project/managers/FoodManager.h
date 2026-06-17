@@ -17,4 +17,6 @@ public:
     std::shared_ptr<Food> getFoodById(unsigned id) const;
 
     void saveFood(Food& food) const;
+
+    void updateFoodCalories(const std::string& foodName, double newCalories);
 };

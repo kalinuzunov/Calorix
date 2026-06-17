@@ -8,9 +8,9 @@
 #include "model/MifflinStJeorStrategy.h"
 #include "model/HarrisBenedictStrategy.h"
 #include "model/WHOStrategy.h"
+#include "model/CalorixExceptions.h"
 
 #include <iostream>
-#include <stdexcept>
 
 #include "Constants.h"
 
@@ -45,16 +45,19 @@ void CalorixSystem::displayHelp() const {
     if (currentUser == nullptr) {
         std::cout << "You are a Guest. Available commands:\n";
         std::cout << "- login <username> <password>\n";
-        std::cout << "- register <username> <password> <age> <weight> <height> <gender>\n";
+        std::cout << "- register <username> <password> <age> <weight> <height> <gender(0/1)>\n";
+
     } else if (std::dynamic_pointer_cast<Admin>(currentUser)) {
         std::cout << "You are an Admin. Available commands:\n";
         std::cout << "- add_food <name> <cal> <prot> <carbs> <fat> <fiber>\n";
+        std::cout << "- update_food <name> <new_calories>\n";
         std::cout << "- list_foods\n";
         std::cout << "- add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>\n";
         std::cout << "- list_exercises\n";
         std::cout << "- block_user <username>\n";
         std::cout << "- unblock_user <username>\n";
         std::cout << "- logout\n";
+
     } else {
         std::cout << "You are a Trainee. Available commands:\n";
         std::cout << "- log_food <name> <grams>\n";
@@ -71,10 +74,12 @@ void CalorixSystem::displayHelp() const {
 }
 
 void CalorixSystem::loginUser(const std::string& username, const std::string& password) {
-    if (currentUser != nullptr) throw std::runtime_error("Already logged in.");
+    if (currentUser != nullptr) {
+        throw AuthenticationException("Already logged in.");
+    }
 
     if (blockedUserManager.isUserBlocked(username)) {
-        throw std::runtime_error("Access denied: Your account has been blocked by an Administrator.");
+        throw AuthenticationException("Access denied: Your account has been blocked by an Administrator.");
     }
 
     std::vector<User> loadedUsers = userManager.loadAllUsers();
@@ -95,7 +100,9 @@ void CalorixSystem::loginUser(const std::string& username, const std::string& pa
         }
     }
 
-    if (!found) throw std::runtime_error("Wrong credentials.");
+    if (!found) {
+        throw InvalidPasswordException("Wrong credentials.");
+    }
     std::cout << "[SYSTEM] Logged in successfully: " << username << "\n";
     displayHelp();
 }
@@ -103,13 +110,13 @@ void CalorixSystem::loginUser(const std::string& username, const std::string& pa
 void CalorixSystem::registerUser(const std::string& username, const std::string& password,
                                  unsigned age, double weight, double height, Gender gender) {
     if (currentUser != nullptr) {
-        throw std::runtime_error("Cannot register while logged in.");
+        throw AuthenticationException("Cannot register while logged in.");
     }
 
     std::vector<User> existingUsers = userManager.loadAllUsers();
     for (const auto& u : existingUsers) {
         if (u.getUsername() == username) {
-            throw std::runtime_error("Username already exists!");
+            throw InvalidNameException("Username already exists!");
         }
     }
     UserProfile profile = UserProfileBuilder()
@@ -128,7 +135,7 @@ void CalorixSystem::registerUser(const std::string& username, const std::string&
 
 void CalorixSystem::logoutUser() {
     if (currentUser == nullptr) {
-        throw std::runtime_error("No user is currently logged in.");
+        throw AuthenticationException("No user is currently logged in.");
     }
     std::cout << "[SYSTEM] Logged out successfully.\n";
     currentUser = nullptr;
@@ -137,7 +144,7 @@ void CalorixSystem::logoutUser() {
 void CalorixSystem::blockUser(const std::string& targetUsername) {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
     if (!admin) {
-        throw std::runtime_error("Access denied. Admin privileges required.");
+        throw UnauthorizedAccessException("Admin privileges required to block users.");
     }
 
     if (blockedUserManager.isUserBlocked(targetUsername)) {
@@ -152,7 +159,7 @@ void CalorixSystem::blockUser(const std::string& targetUsername) {
 void CalorixSystem::unblockUser(const std::string& targetUsername) {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
     if (!admin) {
-        throw std::runtime_error("Access denied. Admin privileges required.");
+        throw UnauthorizedAccessException("Admin privileges required to unblock users.");
     }
 
     if (!blockedUserManager.isUserBlocked(targetUsername)) {
@@ -166,7 +173,9 @@ void CalorixSystem::unblockUser(const std::string& targetUsername) {
 
 void CalorixSystem::addFood(const std::string& name, double calories, double protein, double carbs, double fat, double fiber) const {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
-    if (!admin) throw std::runtime_error("Access denied. Admin privileges required.");
+    if (!admin) {
+        throw UnauthorizedAccessException("Admin privileges required to add food.");
+    }
 
     foodManager.loadAllFoods();
 
@@ -194,15 +203,19 @@ void CalorixSystem::displayAllFoods() const {
 
 void CalorixSystem::updateFood(const std::string& foodName, double newCalories) {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
-    if (!admin) throw std::runtime_error("Access denied. Admin privileges required.");
+    if (!admin) {
+        throw UnauthorizedAccessException("Admin privileges required to update food.");
+    }
 
-    std::cout << "[ADMIN] Food '" << foodName << "' updated.\n";
+    foodManager.updateFoodCalories(foodName, newCalories);
+
+    std::cout << "[ADMIN] Food '" << foodName << "' successfully updated to " << newCalories << " kcal.\n";
 }
 
 void CalorixSystem::addExercise(const std::string& name, double caloriesBurnedPerHour, MuscleGroup muscleGroup) {
     auto admin = std::dynamic_pointer_cast<Admin>(currentUser);
     if (!admin) {
-        throw std::runtime_error("Access denied. Admin privileges required.");
+        throw UnauthorizedAccessException("Admin privileges required to add exercises.");
     }
 
     exerciseManager.loadAllExercises();
@@ -231,7 +244,9 @@ void CalorixSystem::displayAllExercises() const {
 
 void CalorixSystem::setGoal(GoalType type, double targetValue, const Date& deadline) {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied. You must be a Trainee to set goals.");
+    if (!trainee) {
+        throw UnauthorizedAccessException("You must be a Trainee to set goals.");
+    }
 
     std::cout << "[TRAINEE] Goal set successfully.\n";
 }
@@ -239,7 +254,7 @@ void CalorixSystem::setGoal(GoalType type, double targetValue, const Date& deadl
 void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
     if (!trainee) {
-        throw std::runtime_error("Access denied. Trainee privileges required to log food.");
+        throw UnauthorizedAccessException("Trainee privileges required to log food.");
     }
 
     std::vector<Food> allFoods = foodManager.loadAllFoods();
@@ -256,7 +271,7 @@ void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
 
             found = true;
 
-            double caloriesAdded = (quantityGrams / 100.0) * food.getCaloriesPer100g();
+            double caloriesAdded = (quantityGrams / Constants::FoodLimits::BASE_GRAMS_UNIT) * food.getCaloriesPer100g();
 
             std::cout << "[TRAINEE] Successfully logged " << quantityGrams << "g of " << foodName << ".\n";
             std::cout << "          Added " << caloriesAdded << " kcal to your diary.\n";
@@ -272,7 +287,7 @@ void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
 void CalorixSystem::logExercise(const std::string& exerciseName, int durationMinutes) {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
     if (!trainee) {
-        throw std::runtime_error("Access denied. Trainee privileges required to log exercise.");
+        throw UnauthorizedAccessException("Trainee privileges required to log exercise.");
     }
 
     auto allExercises = exerciseManager.loadAllExercises();
@@ -302,7 +317,7 @@ void CalorixSystem::logExercise(const std::string& exerciseName, int durationMin
 void CalorixSystem::viewDailySummary() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
     if (!trainee) {
-        throw std::runtime_error("Access denied. Trainee privileges required to view summary.");
+        throw UnauthorizedAccessException("Trainee privileges required to view summary.");
     }
 
     Date today;
@@ -310,11 +325,11 @@ void CalorixSystem::viewDailySummary() const {
 
     std::cout << "\n=== Daily Summary for " << trainee->getUsername() << " (" << todayStr << ") ===\n";
 
-    double totalConsumed = 0.0;
-    double totalProtein = 0.0;
-    double totalCarbs = 0.0;
-    double totalFat = 0.0;
-    double totalFiber = 0.0;
+    double totalConsumed = Constants::Global::ZERO;
+    double totalProtein = Constants::Global::ZERO;
+    double totalCarbs = Constants::Global::ZERO;
+    double totalFat = Constants::Global::ZERO;
+    double totalFiber = Constants::Global::ZERO;
 
     const auto& foodDiary = trainee->getFoodDiary();
 
@@ -338,7 +353,7 @@ void CalorixSystem::viewDailySummary() const {
 
             for (const auto& ex : allExercises) {
                 if (ex.getExerciseId() == targetId) {
-                    totalBurned += (entry.getDurationMinutes() / 60.0) * ex.getCaloriesBurnedPerHour();
+                    totalBurned += (entry.getDurationMinutes() / Constants::ExerciseLimits::MINUTES_IN_HOUR) * ex.getCaloriesBurnedPerHour();
                     break;
                 }
             }
@@ -360,7 +375,9 @@ void CalorixSystem::viewDailySummary() const {
 
 void CalorixSystem::viewProgress() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw UnauthorizedAccessException("Trainee privileges required to view progress.");
+    }
 
     std::cout << "[TRAINEE] Displaying goal progress...\n";
 }
@@ -368,7 +385,7 @@ void CalorixSystem::viewProgress() const {
 void CalorixSystem::calculateBMI() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
     if (!trainee) {
-        throw std::runtime_error("Access denied. Trainee privileges required.");
+        throw UnauthorizedAccessException("Trainee privileges required to calculate BMI.");
     }
 
     const UserProfile& profile = trainee->getProfile();
@@ -403,7 +420,7 @@ void CalorixSystem::calculateBMI() const {
 void CalorixSystem::calculateBMR() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
     if (!trainee) {
-        throw std::runtime_error("Access denied. Trainee privileges required.");
+        throw UnauthorizedAccessException("Trainee privileges required to calculate BMR.");
     }
 
     const UserProfile& profile = trainee->getProfile();
@@ -426,21 +443,27 @@ void CalorixSystem::calculateBMR() const {
 
 void CalorixSystem::generateWorkoutPlan(int durationMinutes) const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw UnauthorizedAccessException("Trainee privileges required to generate workout plan.");
+    }
 
     std::cout << "[TRAINEE] Generating " << durationMinutes << " min workout plan (Knapsack Algorithm)...\n";
 }
 
 void CalorixSystem::addToFavorites(const std::string& exerciseName) {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw UnauthorizedAccessException("Trainee privileges required to add favorites.");
+    }
 
     std::cout << "[TRAINEE] Added '" << exerciseName << "' to favorites.\n";
 }
 
 void CalorixSystem::viewFavorites() const {
     auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
-    if (!trainee) throw std::runtime_error("Access denied.");
+    if (!trainee) {
+        throw UnauthorizedAccessException("Trainee privileges required to view favorites.");
+    }
 
     std::cout << "[TRAINEE] Displaying favorite exercises...\n";
 }

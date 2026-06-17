@@ -1,16 +1,16 @@
 #include "FoodManager.h"
 #include "../model/FoodBuilder.h"
+#include "../model/CalorixExceptions.h"
 #include "../Constants.h"
 #include <iostream>
 #include <stdexcept>
+#include <fstream>
 
 using namespace Constants;
 
 FoodManager::FoodManager(const std::string& dbFilename) : filename(dbFilename) {}
 
 void FoodManager::saveFood(Food& food) const {
-
-
     std::string line = std::to_string(food.getId()) + Database::DELIMITER +
                        food.getName() + Database::DELIMITER +
                        std::to_string(food.getCaloriesPer100g()) + Database::DELIMITER +
@@ -71,6 +71,37 @@ std::shared_ptr<Food> FoodManager::getFoodById(unsigned id) const {
         }
     }
 
-    throw std::runtime_error("Food with ID " + std::to_string(id) + " not found.");
+    throw InvalidNameException("Food with ID " + std::to_string(id) + " not found.");
 }
 
+void FoodManager::updateFoodCalories(const std::string& foodName, double newCalories) {
+    std::vector<Food> allFoods = loadAllFoods();
+    bool found = false;
+
+    for (auto& food : allFoods) {
+        if (food.getName() == foodName) {
+            food.setCalories(newCalories);
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        throw InvalidNameException("Food '" + foodName + "' not found in database.");
+    }
+
+    std::ofstream file(filename, std::ios::trunc);
+    if (!file.is_open()) {
+        throw InvalidCommandException("Could not open foods file for updating.");
+    }
+
+    for (const auto& food : allFoods) {
+        file << food.getId() << Database::DELIMITER
+             << food.getName() << Database::DELIMITER
+             << food.getCaloriesPer100g() << Database::DELIMITER
+             << food.getProteinPer100g() << Database::DELIMITER
+             << food.getCarbsPer100g() << Database::DELIMITER
+             << food.getFatPer100g() << Database::DELIMITER
+             << food.getFiberPer100g() << "\n";
+    }
+}

@@ -1,5 +1,4 @@
 #include "UserProfile.h"
-#include <stdexcept>
 #include "../Constants.h"
 #include "CalorixExceptions.h"
 
@@ -33,14 +32,14 @@ ActivityLevel UserProfile::getActivityLevel() const { return activityLevel; }
 
 void UserProfile::setWeight(double newWeight) {
     if (newWeight <= Constants::ProfileLimits::MIN_WEIGHT) {
-        throw std::invalid_argument("Weight must be positive.");
+        throw InvalidWeightException("Weight must be positive.");
     }
     weight = newWeight;
 }
 
 void UserProfile::setHeight(double newHeight) {
     if (newHeight <= Constants::ProfileLimits::MIN_HEIGHT) {
-        throw InvalidWeightException("Weight must be positive.");
+        throw InvalidWeightException("Height must be positive.");
     }
     height = newHeight;
 }
