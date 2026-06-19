@@ -45,25 +45,25 @@ void CalorixSystem::displayHelp() const {
     if (currentUser == nullptr) {
         std::cout << "You are a Guest. Available commands:\n";
         std::cout << "- login <username> <password>\n";
-        std::cout << "- register <username> <password> <age> <weight> <height> <gender(0/1)>\n";
-
+        std::cout << "- register <username> <password> <age> <weight> <height> <gender(MALE/FEMALE/OTHER)>\n";
     } else if (std::dynamic_pointer_cast<Admin>(currentUser)) {
         std::cout << "You are an Admin. Available commands:\n";
         std::cout << "- add_food <name> <cal> <prot> <carbs> <fat> <fiber>\n";
         std::cout << "- update_food <name> <new_calories>\n";
         std::cout << "- list_foods\n";
-        std::cout << "- add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>\n";
+        std::cout << "- add_exercise <name> <caloriesPerHour> <muscleGroup(CHEST/BACK/LEGS/SHOULDERS/ARMS/CORE/CARDIO)>\n";
         std::cout << "- list_exercises\n";
         std::cout << "- block_user <username>\n";
         std::cout << "- unblock_user <username>\n";
         std::cout << "- logout\n";
-
     } else {
         std::cout << "You are a Trainee. Available commands:\n";
         std::cout << "- log_food <name> <grams>\n";
         std::cout << "- list_foods\n";
         std::cout << "- log_exercise <name> <minutes>\n";
         std::cout << "- list_exercises\n";
+        std::cout << "- set_goal <type(WEIGHT_LOSS/BULKING/MAINTENANCE)> <targetValue> <deadline(YYYY-MM-DD)>\n";
+        std::cout << "- view_progress\n";
         std::cout << "- view_summary\n";
         std::cout << "- calculate_bmi\n";
         std::cout << "- calculate_bmr\n";
@@ -248,7 +248,12 @@ void CalorixSystem::setGoal(GoalType type, double targetValue, const Date& deadl
         throw UnauthorizedAccessException("You must be a Trainee to set goals.");
     }
 
-    std::cout << "[TRAINEE] Goal set successfully.\n";
+    Date today;
+
+    FitnessGoal newGoal(type, targetValue, today, deadline);
+    trainee->setFitnessGoal(newGoal);
+
+    std::cout << "[TRAINEE] Fitness goal successfully set! Deadline: " << deadline.toString() << "\n";
 }
 
 void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {
@@ -379,7 +384,77 @@ void CalorixSystem::viewProgress() const {
         throw UnauthorizedAccessException("Trainee privileges required to view progress.");
     }
 
-    std::cout << "[TRAINEE] Displaying goal progress...\n";
+    const FitnessGoal& goal = trainee->getFitnessGoal();
+
+    if (goal.getType() == GoalType::NONE) {
+        std::cout << "[TRAINEE] You currently have no active fitness goals.\n";
+        return;
+    }
+
+    std::cout << "\n=== Your Fitness Progress ===\n";
+    std::cout << "Target Deadline: " << goal.getDeadline().toString() << "\n";
+
+    double currentWeight = trainee->getProfile().getWeight();
+
+    if (goal.getType() == GoalType::WEIGHT_LOSS) {
+        double diff = currentWeight - goal.getTargetValue();
+        if (diff <= Constants::Global::ZERO) {
+            std::cout << "Status: CONGRATULATIONS! You reached your weight loss goal!\n";
+        } else {
+            std::cout << "Weight Status: You need to lose " << diff << " more kg to reach your target of " << goal.getTargetValue() << " kg.\n";
+        }
+    }
+    else if (goal.getType() == GoalType::BULKING) {
+        double diff = goal.getTargetValue() - currentWeight;
+        if (diff <= Constants::Global::ZERO) {
+            std::cout << "Status: CONGRATULATIONS! You reached your bulking goal!\n";
+        } else {
+            std::cout << "Weight Status: You need to gain " << diff << " more kg to reach your target of " << goal.getTargetValue() << " kg.\n";
+        }
+    }
+    Date today;
+    std::string todayStr = today.toString();
+
+    double totalConsumed = Constants::Global::ZERO;
+    double totalBurned = Constants::Global::ZERO;
+
+    for (const auto& entry : trainee->getFoodDiary()) {
+        if (entry.getDate().toString() == todayStr) {
+            totalConsumed += entry.getTotalCalories();
+        }
+    }
+
+    auto allExercises = exerciseManager.loadAllExercises();
+    for (const auto& entry : trainee->getExerciseDiary()) {
+        if (entry.getDate().toString() == todayStr) {
+            for (const auto& ex : allExercises) {
+                if (ex.getExerciseId() == entry.getExerciseId()) {
+                    totalBurned += (entry.getDurationMinutes() / 60.0) * ex.getCaloriesBurnedPerHour();
+                    break;
+                }
+            }
+        }
+    }
+
+    double netCalories = totalConsumed - totalBurned;
+
+    trainee->setCalorieCalculator(std::make_unique<MifflinStJeorStrategy>());
+
+    double dailyTarget = trainee->calculateDailyCalorieTarget();
+    double difference = dailyTarget - netCalories;
+
+    std::cout << "------------------------------------\n";
+    std::cout << "Daily Calorie Target: " << dailyTarget << " kcal\n";
+    std::cout << "Today's Net Calories: " << netCalories << " kcal\n";
+    std::cout << "------------------------------------\n";
+
+    if (difference >= Constants::Global::ZERO) {
+        std::cout << "Feedback: You can still consume " << difference << " kcal today.\n";
+    } else {
+        std::cout << "Feedback: CAREFUL! You have exceeded your target by " << -difference << " kcal!\n";
+    }
+
+    std::cout << "====================================\n\n";
 }
 
 void CalorixSystem::calculateBMI() const {

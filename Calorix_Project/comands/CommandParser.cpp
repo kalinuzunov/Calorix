@@ -39,12 +39,13 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
 
     std::string cmdName = args[0];
 
+    constexpr size_t NO_ADDITIONAL_ARGS = 1;
+    constexpr size_t SET_GOAL_EXPECTED_ARGS = 4;
 
     if (cmdName == "help") return std::make_unique<HelpCommand>();
     if (cmdName == "end") return std::make_unique<EndCommand>();
     if (cmdName == "list_foods") return std::make_unique<ListFoodsCommand>();
     if (cmdName == "list_exercises") return std::make_unique<ListExercisesCommand>();
-
 
     if (cmdName == "login") {
         if (args.size() != Constants::Database::LOGIN_RECORD_FIELDS) {
@@ -57,7 +58,7 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
 
     if (cmdName == "register") {
         if (args.size() != Constants::Database::REGISTER_RECORD_FIELDS) {
-            throw InvalidCommandException("Usage: register <username> <password> <age> <weight> <height> <gender(0/1)>");
+            throw InvalidCommandException("Usage: register <username> <password> <age> <weight> <height> <gender(MALE/FEMALE/OTHER)>");
         }
         try {
             std::string username = args[1];
@@ -65,14 +66,18 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
             unsigned age = std::stoul(args[3]);
             double weight = std::stod(args[4]);
             double height = std::stod(args[5]);
-            Gender gender = static_cast<Gender>(std::stoi(args[6]));
+
+            Gender gender;
+            if (args[6] == "MALE") gender = Gender::MALE;
+            else if (args[6] == "FEMALE") gender = Gender::FEMALE;
+            else if (args[6] == "OTHER") gender = Gender::OTHER;
+            else throw std::invalid_argument("Invalid gender format.");
 
             return std::make_unique<RegisterCommand>(username, password, age, weight, height, gender);
         } catch (...) {
             throw InvalidCommandException("Invalid input data for registration!");
         }
     }
-
 
     if (cmdName == "block_user") {
         if (args.size() != Constants::Database::BLOCK_RECORD_FIELDS) {
@@ -121,19 +126,27 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
 
     if (cmdName == "add_exercise") {
         if (args.size() != Constants::Database::EXERCISE_RECORD_FIELDS) {
-            throw InvalidCommandException("Usage: add_exercise <name> <caloriesPerHour> <muscleGroup(0-7)>");
+            throw InvalidCommandException("Usage: add_exercise <name> <caloriesPerHour> <muscleGroup(CHEST/BACK/LEGS/SHOULDERS/ARMS/CORE/CARDIO)>");
         }
         try {
             std::string exName = args[1];
             double calPerHour = std::stod(args[2]);
-            MuscleGroup group = static_cast<MuscleGroup>(std::stoi(args[3]));
+
+            MuscleGroup group;
+            if (args[3] == "CHEST") group = MuscleGroup::CHEST;
+            else if (args[3] == "BACK") group = MuscleGroup::BACK;
+            else if (args[3] == "LEGS") group = MuscleGroup::LEGS;
+            else if (args[3] == "SHOULDERS") group = MuscleGroup::SHOULDERS;
+            else if (args[3] == "ARMS") group = MuscleGroup::ARMS;
+            else if (args[3] == "CORE") group = MuscleGroup::CORE;
+            else if (args[3] == "CARDIO") group = MuscleGroup::CARDIO;
+            else throw std::invalid_argument("Invalid muscle group.");
 
             return std::make_unique<AddExerciseCommand>(exName, calPerHour, group);
         } catch (const std::invalid_argument& e) {
-            throw InvalidCommandException("Calories per hour and muscle group must be valid numbers!");
+            throw InvalidCommandException("Invalid input for add_exercise!");
         }
     }
-
 
     if (cmdName == "log_food") {
         if (args.size() != Constants::Database::ADD_FOOD_RECORD_FIELDS) {
@@ -150,26 +163,52 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
     }
 
     if (cmdName == "view_summary") {
-        if (args.size() > 1) {
+        if (args.size() > NO_ADDITIONAL_ARGS) {
             throw InvalidCommandException("Usage: view_summary (no arguments needed)");
         }
         return std::make_unique<ViewDailySummaryCommand>();
     }
 
     if (cmdName == "calculate_bmi") {
-        if (args.size() > 1) {
+        if (args.size() > NO_ADDITIONAL_ARGS) {
             throw InvalidCommandException("Usage: calculate_bmi (no arguments needed)");
         }
         return std::make_unique<CalculateBMICommand>();
     }
 
     if (cmdName == "calculate_bmr") {
-        if (args.size() > 1) {
+        if (args.size() > NO_ADDITIONAL_ARGS) {
             throw InvalidCommandException("Usage: calculate_bmr (no arguments needed)");
         }
         return std::make_unique<CalculateBMRCommand>();
     }
 
+    if (cmdName == "view_progress") {
+        if (args.size() > NO_ADDITIONAL_ARGS) {
+            throw InvalidCommandException("Usage: view_progress (no arguments needed)");
+        }
+        return std::make_unique<ViewProgressCommand>();
+    }
+
+    if (cmdName == "set_goal") {
+        if (args.size() != SET_GOAL_EXPECTED_ARGS) {
+            throw InvalidCommandException("Usage: set_goal <type(WEIGHT_LOSS/BULKING/MAINTENANCE)> <targetValue> <deadline(YYYY-MM-DD)>");
+        }
+        try {
+            GoalType type;
+            if (args[1] == "WEIGHT_LOSS") type = GoalType::WEIGHT_LOSS;
+            else if (args[1] == "BULKING") type = GoalType::BULKING;
+            else if (args[1] == "MAINTENANCE") type = GoalType::MAINTENANCE;
+            else throw std::invalid_argument("Invalid goal type.");
+
+            double targetValue = std::stod(args[2]);
+            Date deadline(args[3]);
+
+            return std::make_unique<SetGoalCommand>(type, targetValue, deadline);
+        } catch (const std::invalid_argument& e) {
+            throw InvalidCommandException("Invalid input data! Type must be text (e.g., WEIGHT_LOSS) and target must be a number.");
+        }
+    }
 
     throw InvalidCommandException("Unknown command: " + cmdName + ". Type 'help' to see available commands.");
 }
