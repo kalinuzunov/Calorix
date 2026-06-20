@@ -135,3 +135,22 @@ void UserManager::updateUserWeight(const std::string& username, double newWeight
         }
     }
 }
+
+void UserManager::saveFavoriteExercise(const std::string& username, unsigned exerciseId) const {
+    std::string line = username + Database::DELIMITER + std::to_string(exerciseId);
+    appendLine("favorites.txt", line);
+}
+
+std::vector<unsigned> UserManager::loadFavoriteExercises(const std::string& username) const {
+    std::vector<unsigned> favorites;
+    std::vector<std::string> lines = readLines("favorites.txt");
+    for (const auto& line : lines) {
+        std::vector<std::string> data = split(line, Database::DELIMITER);
+        if (data.size() == Constants::Database::FAVORITE_RECORD_FIELDS && data[0] == username) {
+            try {
+                favorites.push_back(std::stoul(data[1]));
+            } catch (...) {}
+        }
+    }
+    return favorites;
+}

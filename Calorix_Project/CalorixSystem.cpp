@@ -69,6 +69,8 @@ void CalorixSystem::displayHelp() const {
         std::cout << "- view_summary\n";
         std::cout << "- calculate_bmi\n";
         std::cout << "- calculate_bmr\n";
+        std::cout << "- add_to_favorites <exercise_name>\n";
+        std::cout << "- view_favorites\n";
         std::cout << "- logout\n";
     }
     std::cout << "- end (Closes the application)\n";
@@ -99,6 +101,11 @@ void CalorixSystem::loginUser(const std::string& username, const std::string& pa
                 FitnessGoal loadedGoal;
                 if (userManager.loadFitnessGoal(username, loadedGoal)) {
                     traineePtr->setFitnessGoal(loadedGoal);
+                }
+
+                auto favs = userManager.loadFavoriteExercises(username);
+                for (unsigned favId : favs) {
+                    traineePtr->addFavoriteExercise(favId);
                 }
 
                 diaryManager.loadUserLogs(*traineePtr, foodManager, exerciseManager);
@@ -555,7 +562,22 @@ void CalorixSystem::addToFavorites(const std::string& exerciseName) {
         throw UnauthorizedAccessException("Trainee privileges required to add favorites.");
     }
 
-    std::cout << "[TRAINEE] Added '" << exerciseName << "' to favorites.\n";
+    auto allExercises = exerciseManager.loadAllExercises();
+    bool found = false;
+
+    for (const auto& ex : allExercises) {
+        if (ex.getName() == exerciseName) {
+            trainee->addFavoriteExercise(ex.getExerciseId());
+            userManager.saveFavoriteExercise(trainee->getUsername(), ex.getExerciseId());
+            std::cout << "[TRAINEE] Added '" << exerciseName << "' to your favorites!\n";
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        std::cout << "[ERROR] Exercise '" << exerciseName << "' not found in the database.\n";
+    }
 }
 
 void CalorixSystem::viewFavorites() const {
@@ -564,5 +586,23 @@ void CalorixSystem::viewFavorites() const {
         throw UnauthorizedAccessException("Trainee privileges required to view favorites.");
     }
 
-    std::cout << "[TRAINEE] Displaying favorite exercises...\n";
+    const auto& favs = trainee->getFavoriteExercises();
+
+    if (favs.empty()) {
+        std::cout << "[TRAINEE] You have no favorite exercises yet.\n";
+        return;
+    }
+
+    auto allExercises = exerciseManager.loadAllExercises();
+
+    std::cout << "\n--- Your Favorite Exercises ---\n";
+    for (unsigned favId : favs) {
+        for (const auto& ex : allExercises) {
+            if (ex.getExerciseId() == favId) {
+                std::cout << "- " << ex.getName() << " | Burns: " << ex.getCaloriesBurnedPerHour() << " kcal/h\n";
+                break;
+            }
+        }
+    }
+    std::cout << "-------------------------------\n\n";
 }

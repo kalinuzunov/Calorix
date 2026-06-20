@@ -176,6 +176,7 @@ namespace Constants {
         inline constexpr size_t NO_ADDITIONAL_ARGS = 1;
         inline constexpr size_t UPDATE_WEIGHT_ARGS = 2;
         inline constexpr size_t SET_GOAL_ARGS = 4;
+        inline constexpr size_t FAVORITE_RECORD_FIELDS = 2;
 
         inline constexpr char RECIPE_INGR_DELIMITER = ',';
         inline constexpr char RECIPE_WEIGHT_DELIMITER = ':';

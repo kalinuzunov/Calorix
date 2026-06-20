@@ -218,5 +218,19 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         }
     }
 
+    if (cmdName == "add_to_favorites") {
+        if (args.size() != 2) {
+            throw InvalidCommandException("Usage: add_to_favorites <exercise_name>");
+        }
+        return std::make_unique<AddToFavoritesCommand>(args[1]);
+    }
+
+    if (cmdName == "view_favorites") {
+        if (args.size() > Constants::Database::NO_ADDITIONAL_ARGS) {
+            throw InvalidCommandException("Usage: view_favorites (no arguments needed)");
+        }
+        return std::make_unique<ViewFavoritesCommand>();
+    }
+
     throw InvalidCommandException("Unknown command: " + cmdName + ". Type 'help' to see available commands.");
 }

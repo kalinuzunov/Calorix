@@ -28,4 +28,6 @@ public:
     void saveFitnessGoal(const std::string& username, const FitnessGoal& goal) const;
     bool loadFitnessGoal(const std::string& username, FitnessGoal& outGoal) const;
     void updateUserWeight(const std::string& username, double newWeight) const;
+    void saveFavoriteExercise(const std::string& username, unsigned exerciseId) const;
+    std::vector<unsigned> loadFavoriteExercises(const std::string& username) const;
 };
