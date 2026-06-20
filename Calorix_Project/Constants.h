@@ -9,6 +9,10 @@ namespace Constants {
         inline constexpr double ZERO = 0.0;
     }
 
+    namespace Security {
+        inline const std::string SUPER_ADMIN_USERNAME = "Kalin_Uzunov";
+    }
+
     namespace ProfileLimits {
         inline constexpr unsigned int MIN_AGE = 1;
         inline constexpr unsigned int MAX_AGE = 150;

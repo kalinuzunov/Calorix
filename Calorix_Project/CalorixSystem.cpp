@@ -31,7 +31,7 @@ void CalorixSystem::initialize() const {
     std::vector<User> loadedUsers = userManager.loadAllUsers();
 
     if (loadedUsers.empty()) {
-        Admin boss("Kalin_Uzunov", Password("kAlIn9.u"), UserProfile{});
+        Admin boss(Constants::Security::SUPER_ADMIN_USERNAME, Password("kAlIn9.u"), UserProfile{});
         userManager.saveUser(boss);
         std::cout << "[SYSTEM] Welcome boss!\n";
     }
@@ -92,7 +92,7 @@ void CalorixSystem::loginUser(const std::string& username, const std::string& pa
 
     for (const auto& user : loadedUsers) {
         if (user.getUsername() == username && user.getPassword() == password) {
-            if (username == "Kalin_Uzunov") {
+            if (username == Constants::Security::SUPER_ADMIN_USERNAME) {
                 currentUser = std::make_shared<Admin>(username, Password(password), user.getProfile());
             } else {
                 currentUser = std::make_shared<Trainee>(user.getUserId(), username, Password(password), user.getProfile());
