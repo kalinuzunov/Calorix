@@ -55,6 +55,11 @@ namespace Constants {
         inline constexpr double DEFAULT_CALORIES_VALUE = 0.0;
         inline constexpr double DEFAULT_DURATION_VALUE = 0.0;
         inline constexpr double MINUTES_IN_HOUR = 60.0;
+
+        inline constexpr int DURATION_CARDIO_MINS = 30;
+        inline constexpr int DURATION_LEGS_MINS = 20;
+        inline constexpr int DURATION_CHEST_BACK_MINS = 15;
+        inline constexpr int DURATION_DEFAULT_MINS = 10;
     }
 
     namespace GoalLimits {
@@ -177,6 +182,7 @@ namespace Constants {
         inline constexpr size_t UPDATE_WEIGHT_ARGS = 2;
         inline constexpr size_t SET_GOAL_ARGS = 4;
         inline constexpr size_t FAVORITE_RECORD_FIELDS = 2;
+        inline constexpr size_t GENERATE_PLAN_ARGS = 2;
 
         inline constexpr char RECIPE_INGR_DELIMITER = ',';
         inline constexpr char RECIPE_WEIGHT_DELIMITER = ':';

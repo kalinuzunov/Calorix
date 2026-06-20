@@ -71,6 +71,7 @@ void CalorixSystem::displayHelp() const {
         std::cout << "- calculate_bmr\n";
         std::cout << "- add_to_favorites <exercise_name>\n";
         std::cout << "- view_favorites\n";
+        std::cout << "- generate_workout_plan <duration_minutes>\n";
         std::cout << "- logout\n";
     }
     std::cout << "- end (Closes the application)\n";
@@ -553,7 +554,85 @@ void CalorixSystem::generateWorkoutPlan(int durationMinutes) const {
         throw UnauthorizedAccessException("Trainee privileges required to generate workout plan.");
     }
 
-    std::cout << "[TRAINEE] Generating " << durationMinutes << " min workout plan (Knapsack Algorithm)...\n";
+    auto allExercises = exerciseManager.loadAllExercises();
+    if (allExercises.empty()) {
+        std::cout << "[ERROR] Not enough exercises in the database to generate a plan.\n";
+        return;
+    }
+
+    struct KnapsackItem {
+        Exercise ex;
+        int duration;
+        double calories;
+    };
+
+    std::vector<KnapsackItem> items;
+    for (const auto& ex : allExercises) {
+        int duration = Constants::ExerciseLimits::DURATION_DEFAULT_MINS;
+        switch(ex.getMuscleGroup()) {
+            case MuscleGroup::CARDIO:
+                duration = Constants::ExerciseLimits::DURATION_CARDIO_MINS;
+                break;
+            case MuscleGroup::LEGS:
+                duration = Constants::ExerciseLimits::DURATION_LEGS_MINS;
+                break;
+            case MuscleGroup::BACK:
+            case MuscleGroup::CHEST:
+                duration = Constants::ExerciseLimits::DURATION_CHEST_BACK_MINS;
+                break;
+            default:
+                duration = Constants::ExerciseLimits::DURATION_DEFAULT_MINS;
+                break;
+        }
+
+        double cals = (duration / static_cast<double>(Constants::ExerciseLimits::MINUTES_IN_HOUR)) * ex.getCaloriesBurnedPerHour();
+        items.push_back({ex, duration, cals});
+    }
+
+    int n = items.size();
+    int W = durationMinutes;
+
+    std::vector<std::vector<double>> dp(n + 1, std::vector<double>(W + 1, Constants::Global::ZERO));
+
+    for (int i = 1; i <= n; ++i) {
+        for (int w = 1; w <= W; ++w) {
+            if (items[i - 1].duration <= w) {
+                dp[i][w] = std::max(dp[i - 1][w],
+                                    dp[i - 1][w - items[i - 1].duration] + items[i - 1].calories);
+            } else {
+                dp[i][w] = dp[i - 1][w];
+            }
+        }
+    }
+
+    int w = W;
+    std::vector<KnapsackItem> selected;
+    for (int i = n; i > 0 && dp[i][w] > Constants::Global::ZERO; --i) {
+        if (dp[i][w] != dp[i - 1][w]) {
+            selected.push_back(items[i - 1]);
+            w -= items[i - 1].duration;
+        }
+    }
+
+    std::cout << "\n=== Optimal Workout Plan (" << durationMinutes << " mins) ===\n";
+    if (selected.empty()) {
+        std::cout << "Duration too short to assign any exercises.\n";
+    } else {
+        double totalCals = Constants::Global::ZERO;
+        int totalTime = 0;
+
+        for (auto it = selected.rbegin(); it != selected.rend(); ++it) {
+            std::cout << "- " << it->ex.getName()
+                      << " (" << it->duration << " mins) -> Burns: "
+                      << it->calories << " kcal\n";
+            totalCals += it->calories;
+            totalTime += it->duration;
+        }
+        std::cout << "----------------------------------------\n";
+        std::cout << "Total Estimated Time:     " << totalTime << " mins\n";
+        std::cout << "Total Calories Burned:    " << totalCals << " kcal\n";
+    }
+    std::cout << "========================================\n\n";
 }
 
 void CalorixSystem::addToFavorites(const std::string& exerciseName) {

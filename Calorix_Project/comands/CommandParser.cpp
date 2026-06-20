@@ -232,5 +232,16 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         return std::make_unique<ViewFavoritesCommand>();
     }
 
+    if (cmdName == "generate_workout_plan") {
+        if (args.size() != Constants::Database::GENERATE_PLAN_ARGS) {
+            throw InvalidCommandException("Usage: generate_workout_plan <duration_minutes>");
+        }
+        try {
+            return std::make_unique<GenerateWorkoutPlanCommand>(std::stoi(args[1]));
+        } catch (...) {
+            throw InvalidCommandException("Duration must be a valid number of minutes!");
+        }
+    }
+
     throw InvalidCommandException("Unknown command: " + cmdName + ". Type 'help' to see available commands.");
 }
