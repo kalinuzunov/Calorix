@@ -172,6 +172,10 @@ namespace Constants {
         inline constexpr size_t LOGIN_RECORD_FIELDS = 3;
         inline constexpr size_t BLOCK_RECORD_FIELDS = 2;
         inline constexpr size_t REGISTER_RECORD_FIELDS = 7;
+        inline constexpr size_t GOAL_RECORD_FIELDS = 5;
+        inline constexpr size_t NO_ADDITIONAL_ARGS = 1;
+        inline constexpr size_t UPDATE_WEIGHT_ARGS = 2;
+        inline constexpr size_t SET_GOAL_ARGS = 4;
 
         inline constexpr char RECIPE_INGR_DELIMITER = ',';
         inline constexpr char RECIPE_WEIGHT_DELIMITER = ':';

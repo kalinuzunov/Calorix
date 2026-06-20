@@ -9,6 +9,7 @@
 #include "model/HarrisBenedictStrategy.h"
 #include "model/WHOStrategy.h"
 #include "model/CalorixExceptions.h"
+#include "model/FitnessGoal.h"
 
 #include <iostream>
 
@@ -63,6 +64,7 @@ void CalorixSystem::displayHelp() const {
         std::cout << "- log_exercise <name> <minutes>\n";
         std::cout << "- list_exercises\n";
         std::cout << "- set_goal <type(WEIGHT_LOSS/BULKING/MAINTENANCE)> <targetValue> <deadline(YYYY-MM-DD)>\n";
+        std::cout << "- update_weight <new_weight_kg>\n";
         std::cout << "- view_progress\n";
         std::cout << "- view_summary\n";
         std::cout << "- calculate_bmi\n";
@@ -93,6 +95,12 @@ void CalorixSystem::loginUser(const std::string& username, const std::string& pa
                 currentUser = std::make_shared<Trainee>(user.getUserId(), username, Password(password), user.getProfile());
 
                 auto traineePtr = std::dynamic_pointer_cast<Trainee>(currentUser);
+
+                FitnessGoal loadedGoal;
+                if (userManager.loadFitnessGoal(username, loadedGoal)) {
+                    traineePtr->setFitnessGoal(loadedGoal);
+                }
+
                 diaryManager.loadUserLogs(*traineePtr, foodManager, exerciseManager);
             }
             found = true;
@@ -252,8 +260,24 @@ void CalorixSystem::setGoal(GoalType type, double targetValue, const Date& deadl
 
     FitnessGoal newGoal(type, targetValue, today, deadline);
     trainee->setFitnessGoal(newGoal);
+    userManager.saveFitnessGoal(trainee->getUsername(), newGoal);
 
     std::cout << "[TRAINEE] Fitness goal successfully set! Deadline: " << deadline.toString() << "\n";
+}
+
+void CalorixSystem::updateWeight(double newWeight) {
+    auto trainee = std::dynamic_pointer_cast<Trainee>(currentUser);
+    if (!trainee) {
+        throw UnauthorizedAccessException("Only Trainees can update their weight.");
+    }
+
+    try {
+        trainee->getProfile().setWeight(newWeight);
+        userManager.updateUserWeight(trainee->getUsername(), newWeight);
+        std::cout << "[TRAINEE] Weight successfully updated to " << newWeight << " kg!\n";
+    } catch (const std::invalid_argument& e) {
+        std::cout << "[ERROR] " << e.what() << "\n";
+    }
 }
 
 void CalorixSystem::logFood(const std::string& foodName, double quantityGrams) {

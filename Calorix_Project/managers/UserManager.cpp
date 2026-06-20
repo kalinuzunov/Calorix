@@ -36,6 +36,20 @@ ActivityLevel UserManager::stringToActivity(const std::string& str) const {
     return ActivityLevel::SEDENTARY;
 }
 
+std::string UserManager::goalTypeToString(GoalType type) const {
+    if (type == GoalType::WEIGHT_LOSS) return "WEIGHT_LOSS";
+    if (type == GoalType::BULKING) return "BULKING";
+    if (type == GoalType::MAINTENANCE) return "MAINTENANCE";
+    return "NONE";
+}
+
+GoalType UserManager::stringToGoalType(const std::string& str) const {
+    if (str == "WEIGHT_LOSS") return GoalType::WEIGHT_LOSS;
+    if (str == "BULKING") return GoalType::BULKING;
+    if (str == "MAINTENANCE") return GoalType::MAINTENANCE;
+    return GoalType::NONE;
+}
+
 void UserManager::saveUser(const User& user) const {
     const UserProfile& profile = user.getProfile();
     std::string line = std::to_string(user.getUserId()) + Database::DELIMITER +
@@ -73,4 +87,51 @@ std::vector<User> UserManager::loadAllUsers() const {
         }
     }
     return loadedUsers;
+}
+
+void UserManager::saveFitnessGoal(const std::string& username, const FitnessGoal& goal) const {
+    std::string line = username + Database::DELIMITER +
+                       goalTypeToString(goal.getType()) + Database::DELIMITER +
+                       std::to_string(goal.getTargetValue()) + Database::DELIMITER +
+                       goal.getStartDate().toString() + Database::DELIMITER +
+                       goal.getDeadline().toString();
+    appendLine("goals.txt", line);
+}
+
+bool UserManager::loadFitnessGoal(const std::string& username, FitnessGoal& outGoal) const {
+    std::vector<std::string> lines = readLines("goals.txt");
+    bool found = false;
+
+    for (const auto& line : lines) {
+        std::vector<std::string> data = split(line, Database::DELIMITER);
+        if (data.size() == Constants::Database::GOAL_RECORD_FIELDS && data[0] == username) {
+            try {
+                GoalType type = stringToGoalType(data[1]);
+                double target = std::stod(data[2]);
+                Date start(data[3]);
+                Date deadline(data[4]);
+                outGoal = FitnessGoal(type, target, start, deadline);
+                found = true;
+            } catch (...) {}
+        }
+    }
+    return found;
+}
+
+void UserManager::updateUserWeight(const std::string& username, double newWeight) const {
+    std::vector<std::string> lines = readLines(filename);
+    std::ofstream file(filename);
+    for (const auto& line : lines) {
+        std::vector<std::string> data = split(line, Database::DELIMITER);
+        if (data.size() == Database::USER_RECORD_FIELDS && data[1] == username) {
+            data[3] = std::to_string(newWeight);
+            std::string newLine = data[0];
+            for (size_t i = 1; i < data.size(); ++i) {
+                newLine += Database::DELIMITER + data[i];
+            }
+            file << newLine << "\n";
+        } else {
+            file << line << "\n";
+        }
+    }
 }

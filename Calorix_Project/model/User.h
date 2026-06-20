@@ -22,6 +22,7 @@ public:
     const std::string& getUsername() const;
     const std::string& getPassword() const;
     const UserProfile& getProfile() const;
+    UserProfile& getProfile();
 
     void setPassword(const Password& newPassword);
     void setProfile(const UserProfile& newProfile);

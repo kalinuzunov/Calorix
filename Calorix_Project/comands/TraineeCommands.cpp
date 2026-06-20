@@ -16,7 +16,6 @@ void LogFoodCommand::execute(CalorixSystem& system) {
     system.logFood(foodName, quantityGrams);
 }
 
-
 LogExerciseCommand::LogExerciseCommand(const std::string& exerciseName, int durationMinutes)
     : exerciseName(exerciseName), durationMinutes(durationMinutes) {}
 
@@ -61,4 +60,10 @@ void AddToFavoritesCommand::execute(CalorixSystem& system) {
 
 void ViewFavoritesCommand::execute(CalorixSystem& system) {
     system.viewFavorites();
+}
+
+UpdateWeightCommand::UpdateWeightCommand(double newWeight) : newWeight(newWeight) {}
+
+void UpdateWeightCommand::execute(CalorixSystem& system) {
+    system.updateWeight(newWeight);
 }

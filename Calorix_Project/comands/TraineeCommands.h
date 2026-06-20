@@ -82,3 +82,12 @@ public:
     ViewFavoritesCommand() = default;
     void execute(CalorixSystem& system) override;
 };
+
+class UpdateWeightCommand : public ICommand {
+private:
+    double newWeight;
+
+public:
+    explicit UpdateWeightCommand(double newWeight);
+    void execute(CalorixSystem& system) override;
+};

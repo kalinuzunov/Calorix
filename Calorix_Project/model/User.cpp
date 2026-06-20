@@ -46,6 +46,10 @@ const UserProfile& User::getProfile() const {
     return profile;
 }
 
+UserProfile& User::getProfile() {
+    return profile;
+}
+
 void User::setPassword(const Password& newPassword) {
     password = newPassword;
 }

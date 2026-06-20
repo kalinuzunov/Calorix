@@ -39,9 +39,6 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
 
     std::string cmdName = args[0];
 
-    constexpr size_t NO_ADDITIONAL_ARGS = 1;
-    constexpr size_t SET_GOAL_EXPECTED_ARGS = 4;
-
     if (cmdName == "help") return std::make_unique<HelpCommand>();
     if (cmdName == "end") return std::make_unique<EndCommand>();
     if (cmdName == "list_foods") return std::make_unique<ListFoodsCommand>();
@@ -162,36 +159,47 @@ std::unique_ptr<ICommand> CommandParser::parse(const std::string& input) const {
         return std::make_unique<LogExerciseCommand>(args[1], std::stoi(args[2]));
     }
 
+    if (cmdName == "update_weight") {
+        if (args.size() != Constants::Database::UPDATE_WEIGHT_ARGS) {
+            throw InvalidCommandException("Usage: update_weight <new_weight_kg>");
+        }
+        try {
+            return std::make_unique<UpdateWeightCommand>(std::stod(args[1]));
+        } catch (...) {
+            throw InvalidCommandException("Weight must be a valid number!");
+        }
+    }
+
     if (cmdName == "view_summary") {
-        if (args.size() > NO_ADDITIONAL_ARGS) {
+        if (args.size() > Constants::Database::NO_ADDITIONAL_ARGS) {
             throw InvalidCommandException("Usage: view_summary (no arguments needed)");
         }
         return std::make_unique<ViewDailySummaryCommand>();
     }
 
     if (cmdName == "calculate_bmi") {
-        if (args.size() > NO_ADDITIONAL_ARGS) {
+        if (args.size() > Constants::Database::NO_ADDITIONAL_ARGS) {
             throw InvalidCommandException("Usage: calculate_bmi (no arguments needed)");
         }
         return std::make_unique<CalculateBMICommand>();
     }
 
     if (cmdName == "calculate_bmr") {
-        if (args.size() > NO_ADDITIONAL_ARGS) {
+        if (args.size() > Constants::Database::NO_ADDITIONAL_ARGS) {
             throw InvalidCommandException("Usage: calculate_bmr (no arguments needed)");
         }
         return std::make_unique<CalculateBMRCommand>();
     }
 
     if (cmdName == "view_progress") {
-        if (args.size() > NO_ADDITIONAL_ARGS) {
+        if (args.size() > Constants::Database::NO_ADDITIONAL_ARGS) {
             throw InvalidCommandException("Usage: view_progress (no arguments needed)");
         }
         return std::make_unique<ViewProgressCommand>();
     }
 
     if (cmdName == "set_goal") {
-        if (args.size() != SET_GOAL_EXPECTED_ARGS) {
+        if (args.size() != Constants::Database::SET_GOAL_ARGS) {
             throw InvalidCommandException("Usage: set_goal <type(WEIGHT_LOSS/BULKING/MAINTENANCE)> <targetValue> <deadline(YYYY-MM-DD)>");
         }
         try {

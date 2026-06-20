@@ -48,6 +48,7 @@ public:
     void displayAllExercises() const;
 
     void setGoal(GoalType type, double targetValue, const Date& deadline);
+    void updateWeight(double newWeight);
     void logFood(const std::string& foodName, double quantityGrams);
     void logExercise(const std::string& exerciseName, int durationMinutes);
     void viewDailySummary() const;
@@ -57,4 +58,5 @@ public:
     void generateWorkoutPlan(int durationMinutes) const;
     void addToFavorites(const std::string& exerciseName);
     void viewFavorites() const;
+
 };
